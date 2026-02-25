@@ -4,7 +4,7 @@ En mobilapplikation för att skapa, följa och analysera dagliga vanor med AI-ge
 
 ## Projektöversikt
 
-**Utvecklare:** [Ditt namn]  
+**Utvecklare:** Jonas N  
 **Tidsplan:** 6 veckor  
 **Tekniker:** React Native (Expo), AWS Serverless (Lambda, DynamoDB, Cognito)
 
