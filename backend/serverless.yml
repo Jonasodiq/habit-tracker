@@ -1,0 +1,51 @@
+service: habit-tracker-api
+
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: eu-north-1
+  profile: habit-tracker
+
+  iam:
+    role: arn:aws:iam::635104184831:role/habit-tracker-backend-dev-eu-north-1-lambdaRole
+  
+  environment:
+    USERS_TABLE: ${self:custom.usersTable}
+    HABITS_TABLE: ${self:custom.habitsTable}
+    COMPLETIONS_TABLE: ${self:custom.completionsTable}
+    COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
+    COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}
+  
+custom:
+  usersTable: habit-tracker-users
+  habitsTable: habit-tracker-habits
+  completionsTable: habit-tracker-completions
+
+functions:
+  healthCheck:
+    handler: functions/health/handler.healthCheck
+    events:
+      - http:
+          path: /health
+          method: get
+          cors: true
+
+plugins: []
+
+package:
+  exclude:
+    - node_modules/**       
+    - .git/**               
+    - .env                  
+    - README.md
+    - tests/**
+    - .vscode/**
+    - serverless.yml
+    - package-lock.json
+    - .DS_Store
+  include:
+    - functions/**          
+    - lib/**                
