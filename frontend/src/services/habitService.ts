@@ -1,12 +1,14 @@
 import apiClient from './apiClient';
 
 export interface Habit {
-  habitId: string;
+   habitId: string;
   userId: string;
   name: string;
   description: string;
   color: string;
   icon: string;
+  frequency: 'daily' | 'weekly';
+  isActive: boolean;
   createdAt: string;
 }
 
@@ -15,6 +17,7 @@ export interface CreateHabitInput {
   description?: string;
   color?: string;
   icon?: string;
+  frequency?: 'daily' | 'weekly';
 }
 
 export interface UpdateHabitInput {

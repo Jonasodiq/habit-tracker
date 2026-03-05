@@ -1,0 +1,48 @@
+import { Habit } from '@/src/services/habitService';
+
+export const sampleHabits: Habit[] = [
+  {
+    habitId: 'sample-1',
+    userId: 'sample-user',
+    name: 'Träna',
+    description: '30 min träning',
+    color: '#FF6B6B',
+    icon: '💪',
+    frequency: 'daily',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    habitId: 'sample-2',
+    userId: 'sample-user',
+    name: 'Läsa',
+    description: '20 sidor per dag',
+    color: '#4ECDC4',
+    icon: '📚',
+    frequency: 'daily',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    habitId: 'sample-3',
+    userId: 'sample-user',
+    name: 'Meditation',
+    description: '10 min mindfulness',
+    color: '#6C63FF',
+    icon: '🧘',
+    frequency: 'daily',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    habitId: 'sample-4',
+    userId: 'sample-user',
+    name: 'Dricka vatten',
+    description: '2 liter per dag',
+    color: '#45B7D1',
+    icon: '💧',
+    frequency: 'daily',
+    isActive: true,
+    createdAt: new Date().toISOString(),
+  },
+];
