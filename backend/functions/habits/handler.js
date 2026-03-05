@@ -18,7 +18,7 @@ module.exports.createHabit = async (event) => {
   try {
     const userId = event.requestContext.authorizer.claims.sub;
     const body = JSON.parse(event.body || '{}');
-    const { name, description, color, icon } = body;
+    const { name, description, color, icon, frequency } = body;
 
     if (!name) {
       return response.badRequest('name krävs');
@@ -31,6 +31,8 @@ module.exports.createHabit = async (event) => {
       description: description || '',
       color: color || '#6C63FF',
       icon: icon || '⭐',
+      frequency: frequency || 'daily',
+      isActive: true,
       createdAt: new Date().toISOString(),
     };
 
@@ -71,7 +73,7 @@ module.exports.updateHabit = async (event) => {
     const userId = event.requestContext.authorizer.claims.sub;
     const { habitId } = event.pathParameters;
     const body = JSON.parse(event.body || '{}');
-    const { name, description, color, icon } = body;
+    const { name, description, color, icon, frequency } = body;
 
     if (!habitId) {
       return response.badRequest('habitId krävs');
