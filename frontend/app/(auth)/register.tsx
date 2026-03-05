@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  View,
   Text,
   TextInput,
   TouchableOpacity,
@@ -11,13 +10,15 @@ import {
   Alert,
 } from 'react-native';
 import { router } from 'expo-router';
-import { register } from '@/src/services/authService';
+import { useAuth } from '@/src/contexts/AuthContext';
 
 export default function RegisterScreen() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const { register } = useAuth();
+  const [name, setName]         = useState('');
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading]   = useState(false);
 
   async function handleRegister() {
     if (!email || !password) {
@@ -33,6 +34,11 @@ export default function RegisterScreen() {
 
     if (password.length < 8) {
       Alert.alert('För kort lösenord', 'Lösenordet måste vara minst 8 tecken.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Lösenorden matchar inte', 'Kontrollera att du skrivit samma lösenord två gånger.');
       return;
     }
 
@@ -80,6 +86,15 @@ export default function RegisterScreen() {
         secureTextEntry
         value={password}
         onChangeText={setPassword}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Bekräfta lösenord"
+        placeholderTextColor="#999"
+        secureTextEntry
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
       />
 
       <TouchableOpacity

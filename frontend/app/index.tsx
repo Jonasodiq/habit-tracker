@@ -1,20 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { Redirect } from 'expo-router';
-import { isLoggedIn } from '@/src/services/authService';
+import { useAuth } from '@/src/contexts/AuthContext';
 
 export default function Index() {
-  const [checking, setChecking] = useState(true);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const { loading, loggedIn } = useAuth();
 
-  useEffect(() => {
-    isLoggedIn()
-      .then((result) => setLoggedIn(result))
-      .catch(() => setLoggedIn(false))
-      .finally(() => setChecking(false));
-  }, []);
-
-  if (checking) {
+  if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#6C63FF" />
