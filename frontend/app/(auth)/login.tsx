@@ -20,9 +20,16 @@ export default function LoginScreen() {
 
   async function handleLogin() {
     if (!email || !password) {
-      Alert.alert('Fyll i email och lösenord');
+      Alert.alert('Fyll i alla fält', 'Email och lösenord krävs.');
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      Alert.alert('Ogiltig email', 'Ange en giltig e-postadress.');
+      return;
+    }
+
     try {
       setLoading(true);
       await login(email.trim(), password);
