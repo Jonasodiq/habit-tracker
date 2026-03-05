@@ -3,33 +3,14 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
-import { Stack, useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { isLoggedIn } from '@/src/services/authService';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const router = useRouter();
-
-  useEffect(() => {
-    isLoggedIn()
-      .then((loggedIn) => {
-        if (!loggedIn) {
-          router.replace('/(auth)/login' as any);
-        }
-      })
-      .catch(() => {
-        router.replace('/(auth)/login' as any);
-      });
-  }, []);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
