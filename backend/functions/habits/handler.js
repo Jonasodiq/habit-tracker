@@ -142,6 +142,7 @@ module.exports.deleteHabit = async (event) => {
       return response.badRequest('habitId krävs');
     }
 
+    // 1. Kontrollera att vanan finns och ägs av användaren
     const existing = await dynamo.send(
       new GetCommand({
         TableName: TABLE,
@@ -157,6 +158,31 @@ module.exports.deleteHabit = async (event) => {
       return response.badRequest('Du äger inte denna vana');
     }
 
+    // 2. Hämta alla relaterade completions
+    const completions = await dynamo.send(
+      new QueryCommand({
+        TableName: process.env.COMPLETIONS_TABLE,
+        IndexName: 'HabitIdDateIndex',
+        KeyConditionExpression: 'habitId = :hid',
+        ExpressionAttributeValues: { ':hid': habitId },
+      }),
+    );
+
+    // 3. Radera alla completions
+    if (completions.Items && completions.Items.length > 0) {
+      await Promise.all(
+        completions.Items.map((item) =>
+          dynamo.send(
+            new DeleteCommand({
+              TableName: process.env.COMPLETIONS_TABLE,
+              Key: { completionId: item.completionId },
+            }),
+          ),
+        ),
+      );
+    }
+
+    // 4. Radera vanan
     await dynamo.send(
       new DeleteCommand({
         TableName: TABLE,
@@ -164,7 +190,11 @@ module.exports.deleteHabit = async (event) => {
       }),
     );
 
-    return response.success({ message: 'Vana raderad', habitId });
+    return response.success({
+      message: 'Vana raderad',
+      habitId,
+      deletedCompletions: completions.Items?.length ?? 0,
+    });
   } catch (err) {
     console.error('deleteHabit error:', err);
     return response.serverError('Kunde inte radera vana');
