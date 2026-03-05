@@ -4,10 +4,11 @@ import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { logout } from '@/src/services/authService';
+import { useAuth } from '@/src/contexts/AuthContext';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { user, logout } = useAuth();
 
   async function handleLogout() {
     Alert.alert('Logga ut', 'Är du säker?', [
@@ -23,15 +24,6 @@ export default function ProfileScreen() {
     ]);
   }
 
-  // Dummy user data
-  const user = {
-    name: 'Test User',
-    email: 'test@example.com',
-    joinedDate: 'Feb 2024',
-    totalHabits: 3,
-    daysActive: 15,
-  };
-
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#c1ddd5', dark: '#353636' }}
@@ -45,36 +37,24 @@ export default function ProfileScreen() {
       }
     >
       <ThemedView style={{ flex: 1, alignItems: 'center', paddingTop: 32 }}>
-        {/* Name & Email */}
+
         <ThemedText type="title" style={{ marginBottom: 4 }}>
-          {user.name}
+          {user?.name || 'Användare'}
         </ThemedText>
-        <ThemedText type="subtitle" style={{ marginBottom: 16 }}>
-          {user.email}
+        <ThemedText type="subtitle" style={{ marginBottom: 24 }}>
+          {user?.email || ''}
         </ThemedText>
-        {/* Stats */}
-        <ThemedView style={{ flexDirection: 'row', gap: 24, marginBottom: 24 }}>
-          <ThemedView style={{ alignItems: 'center' }}>
-            <ThemedText type="defaultSemiBold" style={{ fontSize: 20 }}>
-              {user.totalHabits}
-            </ThemedText>
-            <ThemedText>Habits</ThemedText>
-          </ThemedView>
-          <ThemedView style={{ alignItems: 'center' }}>
-            <ThemedText type="defaultSemiBold" style={{ fontSize: 20 }}>
-              {user.daysActive}
-            </ThemedText>
-            <ThemedText>Days Active</ThemedText>
-          </ThemedView>
-        </ThemedView>
-        {/* Member since */}
+
         <ThemedText style={{ color: '#aaa', fontSize: 14 }}>
-          Member since {user.joinedDate}
+          Medlem sedan {user?.createdAt
+            ? new Date(user.createdAt).toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })
+            : ''}
         </ThemedText>
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <ThemedText style={styles.logoutText}>Logga ut</ThemedText>
         </TouchableOpacity>
+
       </ThemedView>
     </ParallaxScrollView>
   );

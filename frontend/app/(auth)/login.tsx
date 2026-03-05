@@ -11,9 +11,10 @@ import {
   Alert,
 } from 'react-native';
 import { router } from 'expo-router';
-import { login } from '@/src/services/authService';
+import { useAuth } from '@/src/contexts/AuthContext';
 
 export default function LoginScreen() {
+  const { login } = useAuth();
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading]   = useState(false);
