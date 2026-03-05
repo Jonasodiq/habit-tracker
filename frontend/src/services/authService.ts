@@ -41,10 +41,7 @@ export async function login(email: string, password: string): Promise<AuthResult
 
 // Logga ut — rensa all lagrad data.
 export async function logout(): Promise<void> {
-  await AsyncStorage.removeItem(KEYS.idToken);
-  await AsyncStorage.removeItem(KEYS.accessToken);
-  await AsyncStorage.removeItem(KEYS.refreshToken);
-  await AsyncStorage.removeItem(KEYS.user);
+  await AsyncStorage.clear();
 }
 
 // Hämta inloggad användare från storage.
