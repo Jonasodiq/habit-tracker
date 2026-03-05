@@ -34,7 +34,6 @@ functions:
           path: /auth/users
           method: post
           cors: true
-
   login:
     handler: functions/auth/login/handler.login
     events:
@@ -42,6 +41,26 @@ functions:
           path: /auth/login
           method: post
           cors: true
+  getUser:
+    handler: functions/auth/getUser/handler.getUser
+    events:
+      - http:
+          path: /auth/users/me
+          method: get
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            arn: ${self:custom.cognitoArn}
+  updateUser:
+    handler: functions/auth/updateUser/handler.updateUser
+    events:
+      - http:
+          path: /auth/users/me
+          method: patch
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            arn: ${self:custom.cognitoArn}
 
   # --- HABITS ---
   createHabit:
