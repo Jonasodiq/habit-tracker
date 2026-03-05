@@ -24,18 +24,14 @@ export interface AuthResult {
   refreshToken: string;
 }
 
-/**
- * Registrera ny användare — skapar konto i Cognito + DynamoDB, returnerar token direkt.
- */
+// Registrera ny användare — skapar konto i Cognito + DynamoDB
 export async function register(email: string, password: string, name: string): Promise<AuthResult> {
   const { data } = await axios.post(`${BASE_URL}/auth/users`, { email, password, name });
   await saveTokens(data);
   return data;
 }
 
-/**
- * Logga in med email + lösenord.
- */
+// Logga in med email + lösenord.
 export async function login(email: string, password: string): Promise<AuthResult> {
   const { data } = await axios.post(`${BASE_URL}/auth/login`, { email, password });
   // login-svaret har inte user — hämta från storage eller bygg minimalt objekt
@@ -43,9 +39,7 @@ export async function login(email: string, password: string): Promise<AuthResult
   return data;
 }
 
-/**
- * Logga ut — rensa all lagrad data.
- */
+// Logga ut — rensa all lagrad data.
 export async function logout(): Promise<void> {
   await AsyncStorage.removeItem(KEYS.idToken);
   await AsyncStorage.removeItem(KEYS.accessToken);
@@ -53,17 +47,13 @@ export async function logout(): Promise<void> {
   await AsyncStorage.removeItem(KEYS.user);
 }
 
-/**
- * Hämta inloggad användare från storage.
- */
+// Hämta inloggad användare från storage.
 export async function getStoredUser(): Promise<User | null> {
   const json = await AsyncStorage.getItem(KEYS.user);
   return json ? JSON.parse(json) : null;
 }
 
-/**
- * Kontrollera om användaren är inloggad.
- */
+// Kontrollera om användaren är inloggad.
 export async function isLoggedIn(): Promise<boolean> {
   const token = await AsyncStorage.getItem(KEYS.idToken);
   return !!token;

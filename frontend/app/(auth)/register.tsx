@@ -21,9 +21,21 @@ export default function RegisterScreen() {
 
   async function handleRegister() {
     if (!email || !password) {
-      Alert.alert('Fyll i email och lösenord');
+      Alert.alert('Fyll i alla fält', 'Email och lösenord krävs.');
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      Alert.alert('Ogiltig email', 'Ange en giltig e-postadress.');
+      return;
+    }
+
+    if (password.length < 8) {
+      Alert.alert('För kort lösenord', 'Lösenordet måste vara minst 8 tecken.');
+      return;
+    }
+
     try {
       setLoading(true);
       await register(email.trim(), password, name.trim());
