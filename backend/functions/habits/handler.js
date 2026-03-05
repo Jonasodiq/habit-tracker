@@ -73,7 +73,7 @@ module.exports.updateHabit = async (event) => {
     const userId = event.requestContext.authorizer.claims.sub;
     const { habitId } = event.pathParameters;
     const body = JSON.parse(event.body || '{}');
-    const { name, description, color, icon, frequency } = body;
+    const { name, description, color, icon, frequency,isActive } = body;
 
     if (!habitId) {
       return response.badRequest('habitId krävs');
@@ -99,6 +99,8 @@ module.exports.updateHabit = async (event) => {
     if (description !== undefined) updates.description = description;
     if (color !== undefined) updates.color = color;
     if (icon !== undefined) updates.icon = icon;
+    if (frequency !== undefined) updates.frequency = frequency;
+    if (isActive !== undefined) updates.isActive = isActive;
 
     if (Object.keys(updates).length === 0) {
       return response.badRequest('Inga fält att uppdatera');
