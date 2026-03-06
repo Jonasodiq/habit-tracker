@@ -7,7 +7,7 @@ export interface Habit {
   description: string;
   color: string;
   icon: string;
-  frequency: 'daily' | 'weekly';
+  frequency?: 'daily' | 'weekly' | 'monthly';
   isActive: boolean;
   createdAt: string;
 }
@@ -17,7 +17,7 @@ export interface CreateHabitInput {
   description?: string;
   color?: string;
   icon?: string;
-  frequency?: 'daily' | 'weekly';
+  frequency: 'daily' | 'weekly' | 'monthly';
 }
 
 export interface UpdateHabitInput {

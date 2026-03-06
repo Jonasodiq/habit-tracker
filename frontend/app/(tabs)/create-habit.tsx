@@ -18,7 +18,7 @@ const ICONS  = ['⭐', '💪', '📚', '🧘', '💧', '🏃', '🎯', '😴', '
 export default function CreateHabitScreen() {
   const [name, setName]               = useState('');
   const [description, setDescription] = useState('');
-  const [frequency, setFrequency]     = useState<'daily' | 'weekly'>('daily');
+  const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'monthly'>('daily');
   const [color, setColor]             = useState('#6C63FF');
   const [icon, setIcon]               = useState('⭐');
   const [loading, setLoading]         = useState(false);
@@ -84,14 +84,14 @@ export default function CreateHabitScreen() {
       {/* Frekvens */}
       <Text style={styles.label}>Frekvens</Text>
       <View style={styles.row}>
-        {(['daily', 'weekly'] as const).map((f) => (
+        {(['daily', 'weekly', 'monthly'] as const).map((f) => (
           <TouchableOpacity
             key={f}
             style={[styles.chip, frequency === f && styles.chipActive]}
             onPress={() => setFrequency(f)}
           >
             <Text style={[styles.chipText, frequency === f && styles.chipTextActive]}>
-              {f === 'daily' ? 'Dagligen' : 'Veckovis'}
+              {f === 'daily' ? 'Dagligen' : f === 'weekly' ? 'Veckovis' : 'Månadsvis'}
             </Text>
           </TouchableOpacity>
         ))}
