@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import { useState } from 'react';
+import { useCallback } from 'react';
 import {
   View,
   Text,
@@ -14,9 +16,11 @@ export default function HabitsScreen() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  useFocusEffect(
+  useCallback(() => {
     fetchHabits();
-  }, []);
+  }, [])
+);
 
   async function fetchHabits() {
     try {
@@ -58,7 +62,15 @@ export default function HabitsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Mina vanor</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Mina vanor</Text>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => router.push('/(tabs)/create-habit' as any)}
+        >
+          <Text style={styles.addButtonText}>+</Text>
+        </TouchableOpacity>
+      </View>
 
       {habits.length === 0 ? (
         <View style={styles.center}>
@@ -94,6 +106,25 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingTop: 60,
     backgroundColor: '#fff',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  addButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#6C63FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 28,
+    fontWeight: '300',
+    lineHeight: 32,
   },
   center: {
     flex: 1,
