@@ -71,7 +71,7 @@ export default function HabitsScreen() {
         <Text style={styles.title}>Mina vanor</Text>
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => router.push('/(tabs)/create-habit' as any)}
+          onPress={() => router.push('/(tabs)/habit-form' as any)}
         >
           <Text style={styles.addButtonText}>+</Text>
         </TouchableOpacity>
