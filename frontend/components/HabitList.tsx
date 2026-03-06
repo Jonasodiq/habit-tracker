@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import {
   View,
   Text,
@@ -42,17 +43,33 @@ export default function HabitList({ habits, refreshing, onRefresh, onDelete }: P
         <View style={[styles.card, { borderLeftColor: item.color }]}>
           <Text style={styles.icon}>{item.icon}</Text>
           <View style={styles.cardContent}>
-            <Text style={styles.name}>{item.name}</Text>
-            {!!item.description && (
-              <Text style={styles.description}>{item.description}</Text>
-            )}
-            <Text style={styles.frequency}>
-              {item.frequency === 'daily' ? '📅 Dagligen' : item.frequency === 'weekly' ? '📅 Veckovis' : '📅 Månadsvis'}
-            </Text>
+                <Text style={styles.name}>{item.name}</Text>
+                    {!!item.description && (
+                        <Text style={styles.description}>{item.description}</Text>
+                    )}
+                        <Text style={styles.frequency}>
+                    {item.frequency === 'daily' ? '📅 Dagligen' : item.frequency === 'weekly' ? '📅 Veckovis' : '📅 Månadsvis'}
+                </Text>
           </View>
-          <TouchableOpacity onPress={() => onDelete(item.habitId)}>
+          <TouchableOpacity
+            onPress={() => router.push({
+                pathname: '/(tabs)/habit-form' as any,
+                params: {
+                habitId: item.habitId,
+                name: item.name,
+                description: item.description,
+                frequency: item.frequency,
+                color: item.color,
+                icon: item.icon,
+                },
+            })}
+            >
+            <Text style={styles.edit}>✏️</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => onDelete(item.habitId)}>
             <Text style={styles.delete}>🗑</Text>
-          </TouchableOpacity>
+            </TouchableOpacity>
         </View>
       )}
       contentContainerStyle={habits.length === 0 ? styles.fullHeight : styles.list}
@@ -74,4 +91,5 @@ const styles = StyleSheet.create({
   description:  { fontSize: 13, color: '#687076' },
   frequency:    { fontSize: 12, color: '#9CA3AF', marginTop: 2 },
   delete:       { fontSize: 20, paddingLeft: 8 },
+  edit: { fontSize: 20, paddingLeft: 8 },
 });

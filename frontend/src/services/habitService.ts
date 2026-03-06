@@ -17,7 +17,7 @@ export interface CreateHabitInput {
   description?: string;
   color?: string;
   icon?: string;
-  frequency: 'daily' | 'weekly' | 'monthly';
+  frequency?: 'daily' | 'weekly' | 'monthly';
 }
 
 export interface UpdateHabitInput {
@@ -25,6 +25,7 @@ export interface UpdateHabitInput {
   description?: string;
   color?: string;
   icon?: string;
+  frequency?: 'daily' | 'weekly' | 'monthly';
 }
 
 export async function getHabits(): Promise<Habit[]> {
