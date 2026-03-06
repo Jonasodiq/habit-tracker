@@ -59,20 +59,45 @@ module.exports.completeHabit = async (event) => {
   }
 };
 
-// GET /completions
+// GET /completions?habitId=xxx&from=2024-01-01&to=2024-12-31
 module.exports.getCompletions = async (event) => {
   try {
     const userId = event.requestContext.authorizer.claims.sub;
+    const { habitId, from, to } = event.queryStringParameters || {};
 
-    const result = await dynamo.send(
-      new QueryCommand({
+    let result;
+
+    if (habitId) {
+      // Hämta completions för specifik vana
+      const params = {
+        TableName: TABLE,
+        IndexName: HABIT_INDEX,
+        KeyConditionExpression: from && to
+          ? 'habitId = :hid AND completedDate BETWEEN :from AND :to'
+          : 'habitId = :hid',
+        ExpressionAttributeValues: {
+          ':hid': habitId,
+          ...(from && to ? { ':from': from, ':to': to } : {}),
+        },
+        ScanIndexForward: false,
+      };
+      result = await dynamo.send(new QueryCommand(params));
+    } else {
+      // Hämta alla completions för användaren
+      const params = {
         TableName: TABLE,
         IndexName: USER_INDEX,
-        KeyConditionExpression: 'userId = :uid',
-        ExpressionAttributeValues: { ':uid': userId },
+        KeyConditionExpression: from && to
+          ? 'userId = :uid AND completedDate BETWEEN :from AND :to'
+          : 'userId = :uid',
+        ExpressionAttributeValues: {
+          ':uid': userId,
+          ...(from && to ? { ':from': from, ':to': to } : {}),
+        },
         ScanIndexForward: false,
-      }),
-    );
+      };
+      result = await dynamo.send(new QueryCommand(params));
+    }
 
     return response.success({ completions: result.Items });
   } catch (err) {
