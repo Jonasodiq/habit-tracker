@@ -1,14 +1,15 @@
 import apiClient from './apiClient';
 
 export interface Habit {
-   habitId: string;
+  habitId: string;
   userId: string;
   name: string;
   description: string;
   color: string;
   icon: string;
-  frequency?: 'daily' | 'weekly' | 'monthly';
+  frequency: 'daily' | 'weekly' | 'monthly';
   isActive: boolean;
+  streak: number;
   createdAt: string;
 }
 
