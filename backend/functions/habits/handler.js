@@ -1,3 +1,5 @@
+const { calculateStreak } = require('../../lib/calculateStreak');
+const { QueryCommand: CompletionQueryCommand } = require('../../lib/dynamodb');
 const { randomUUID } = require('crypto');
 const {
   dynamo,
@@ -50,7 +52,8 @@ module.exports.getHabits = async (event) => {
   try {
     const userId = event.requestContext.authorizer.claims.sub;
 
-    const result = await dynamo.send(
+    // 1. Hämta alla vanor
+    const habitsResult = await dynamo.send(
       new QueryCommand({
         TableName: TABLE,
         IndexName: USER_INDEX,
@@ -60,7 +63,30 @@ module.exports.getHabits = async (event) => {
       }),
     );
 
-    return response.success({ habits: result.Items });
+    const habits = habitsResult.Items || [];
+
+    // 2. Beräkna streak för varje vana parallellt
+    const habitsWithStreak = await Promise.all(
+      habits.map(async (habit) => {
+        const completions = await dynamo.send(
+          new CompletionQueryCommand({
+            TableName: process.env.COMPLETIONS_TABLE,
+            IndexName: 'HabitIdDateIndex',
+            KeyConditionExpression: 'habitId = :hid',
+            ExpressionAttributeValues: { ':hid': habit.habitId },
+            ScanIndexForward: false,
+            Limit: 90, // Max 90 dagar bakåt
+          }),
+        );
+
+        const dates = (completions.Items || []).map((c) => c.completedDate);
+        const streak = calculateStreak(dates, habit.frequency);
+
+        return { ...habit, streak };
+      }),
+    );
+
+    return response.success({ habits: habitsWithStreak });
   } catch (err) {
     console.error('getHabits error:', err);
     return response.serverError('Kunde inte hämta vanor');
