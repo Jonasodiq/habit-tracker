@@ -9,6 +9,9 @@ import {
 } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { getStatistics, Statistics } from '@/src/services/statisticsService';
+import { getCompletions, Completion } from '@/src/services/completionService';
+import { getHabits, Habit } from '@/src/services/habitService';
+import HabitCalendar from '@/components/HabitCalendar';
 
 function SummaryCard({ label, value, emoji }: { label: string; value: string | number; emoji: string }) {
   return (
@@ -73,6 +76,8 @@ export default function StatsScreen() {
   const [stats, setStats]       = useState<Statistics | null>(null);
   const [loading, setLoading]   = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [completions, setCompletions] = useState<Completion[]>([]);
+  const [habits, setHabits]           = useState<Habit[]>([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -81,26 +86,38 @@ export default function StatsScreen() {
   );
 
   async function loadStats() {
-    try {
-      setLoading(true);
-      const data = await getStatistics();
-      setStats(data);
-    } catch {
-      // visa tomt state
-    } finally {
-      setLoading(false);
-    }
+  try {
+    setLoading(true);
+    const [data, completionsData, habitsData] = await Promise.all([
+      getStatistics(),
+      getCompletions(),
+      getHabits(),
+    ]);
+    setStats(data);
+    setCompletions(completionsData);
+    setHabits(habitsData);
+  } catch {
+    // visa tomt state
+  } finally {
+    setLoading(false);
   }
+}
 
   async function handleRefresh() {
-    try {
-      setRefreshing(true);
-      const data = await getStatistics();
-      setStats(data);
-    } finally {
-      setRefreshing(false);
-    }
+  try {
+    setRefreshing(true);
+    const [data, completionsData, habitsData] = await Promise.all([
+      getStatistics(),
+      getCompletions(),
+      getHabits(),
+    ]);
+    setStats(data);
+    setCompletions(completionsData);
+    setHabits(habitsData);
+  } finally {
+    setRefreshing(false);
   }
+}
 
   if (loading) {
     return (
@@ -146,6 +163,9 @@ export default function StatsScreen() {
         <SummaryCard emoji="🔥" value={stats.summary.bestStreak} label="Bästa streak" />
         <SummaryCard emoji="📈" value={`${stats.summary.avgCompletionRate}%`} label="Snitt %" />
       </View>
+
+      {/* Habit calendar */}
+      <HabitCalendar habits={habits} completions={completions} />
 
       {/* Bar chart */}
       <BarChart habits={stats.habits} />
