@@ -55,10 +55,10 @@ export default function HabitsScreen() {
     (c) => c.habitId === habitId && c.completedDate === today
   );
 
-  console.log('🔍 habitId:', habitId);
-  console.log('🔍 today:', today);
-  console.log('🔍 existingCompletion:', existingCompletion);
-  console.log('🔍 completions:', completions);
+  // console.log('habitId:', habitId);
+  // console.log('today:', today);
+  // console.log('existingCompletion:', existingCompletion);
+  // console.log('completions:', completions);
 
   try {
     if (existingCompletion) {
