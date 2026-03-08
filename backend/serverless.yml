@@ -106,6 +106,18 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             arn: ${self:custom.cognitoArn}
+
+  # --- INSIGHTS ---
+  getInsights:
+    handler: functions/insights/handler.getInsights
+    events:
+      - http:
+          path: /insights
+          method: get
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            arn: ${self:custom.cognitoArn}
             
   # --- STATISTICS ---
   getStatistics:
