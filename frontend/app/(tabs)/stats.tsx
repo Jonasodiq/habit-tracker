@@ -12,6 +12,8 @@ import { getStatistics, Statistics } from '@/src/services/statisticsService';
 import { getCompletions, Completion } from '@/src/services/completionService';
 import { getHabits, Habit } from '@/src/services/habitService';
 import HabitCalendar from '@/components/HabitCalendar';
+import { getInsights, InsightsResponse } from '@/src/services/insightsService';
+import InsightCards from '@/components/InsightCards';
 
 function SummaryCard({ label, value, emoji }: { label: string; value: string | number; emoji: string }) {
   return (
@@ -78,6 +80,7 @@ export default function StatsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [completions, setCompletions] = useState<Completion[]>([]);
   const [habits, setHabits]           = useState<Habit[]>([]);
+  const [insightsData, setInsightsData] = useState<InsightsResponse | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -88,14 +91,16 @@ export default function StatsScreen() {
   async function loadStats() {
   try {
     setLoading(true);
-    const [data, completionsData, habitsData] = await Promise.all([
-      getStatistics(),
-      getCompletions(),
-      getHabits(),
-    ]);
+    const [data, completionsData, habitsData, insights] = await Promise.all([
+    getStatistics(),
+    getCompletions(),
+    getHabits(),
+    getInsights(),
+  ]);
     setStats(data);
     setCompletions(completionsData);
     setHabits(habitsData);
+    setInsightsData(insights);
   } catch {
     // visa tomt state
   } finally {
@@ -106,14 +111,16 @@ export default function StatsScreen() {
   async function handleRefresh() {
   try {
     setRefreshing(true);
-    const [data, completionsData, habitsData] = await Promise.all([
-      getStatistics(),
-      getCompletions(),
-      getHabits(),
-    ]);
+    const [data, completionsData, habitsData, insights] = await Promise.all([
+    getStatistics(),
+    getCompletions(),
+    getHabits(),
+    getInsights(),
+  ]);
     setStats(data);
     setCompletions(completionsData);
     setHabits(habitsData);
+    setInsightsData(insights);
   } finally {
     setRefreshing(false);
   }
@@ -163,6 +170,17 @@ export default function StatsScreen() {
         <SummaryCard emoji="🔥" value={stats.summary.bestStreak} label="Bästa streak" />
         <SummaryCard emoji="📈" value={`${stats.summary.avgCompletionRate}%`} label="Snitt %" />
       </View>
+
+      {/* AI-insikter */}
+      {insightsData && (
+      <InsightCards
+        aiInsight={insightsData.aiInsight}
+        fallbackInsights={insightsData.fallbackInsights}
+        generatedAt={insightsData.generatedAt}
+        dataPoints={insightsData.dataPoints}
+        fromCache={insightsData.fromCache}
+      />
+    )}
 
       {/* Habit calendar */}
       <HabitCalendar habits={habits} completions={completions} />

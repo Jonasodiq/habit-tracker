@@ -18,12 +18,15 @@ provider:
     COMPLETIONS_TABLE: ${self:custom.completionsTable}
     COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
     COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}
+    INSIGHTS_CACHE_TABLE: ${self:custom.insightsCacheTable}
+    ANTHROPIC_API_KEY: ${env:ANTHROPIC_API_KEY}
 
 custom:
   usersTable: habit-tracker-users
   habitsTable: habit-tracker-habits
   completionsTable: habit-tracker-completions
   cognitoArn: arn:aws:cognito-idp:eu-north-1:635104184831:userpool/eu-north-1_tHSuinBiR
+  insightsCacheTable: habit-tracker-insights-cache-${self:provider.stage}
 
 functions:
   # --- AUTH ---
@@ -110,6 +113,7 @@ functions:
   # --- INSIGHTS ---
   getInsights:
     handler: functions/insights/handler.getInsights
+    timeout: 30
     events:
       - http:
           path: /insights
@@ -181,3 +185,20 @@ package:
   include:
     - functions/**
     - lib/**
+
+resources:
+  Resources:
+    InsightsCacheTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.insightsCacheTable}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
