@@ -223,3 +223,53 @@ module.exports.getInsights = async (event) => {
     return response.serverError('Kunde inte generera insikter');
   }
 };
+
+// POST /insights/tips
+module.exports.getHabitTips = async (event) => {
+  try {
+    const userId = event.requestContext.authorizer.claims.sub;
+    const body   = JSON.parse(event.body || '{}');
+    const { habitName, habitIcon, habitFrequency } = body;
+
+    if (!habitName) {
+      return response.badRequest('habitName krävs');
+    }
+
+    const prompt = `Du är en motiverande coach. En användare kämpar med vanan "${habitIcon} ${habitName}" (${habitFrequency}).
+
+Ge 3 konkreta, praktiska tips på svenska för att förbättra denna vana.
+
+Format:
+1. [Tips rubrik]: [Förklaring på 1-2 meningar]
+2. [Tips rubrik]: [Förklaring på 1-2 meningar]  
+3. [Tips rubrik]: [Förklaring på 1-2 meningar]
+
+Avsluta med en kort motiverande mening. Max 150 ord totalt.`;
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type':    'application/json',
+        'x-api-key':       ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model:      'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages:   [{ role: 'user', content: prompt }],
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Claude API error: ${res.status}`);
+    }
+
+    const data = await res.json();
+    const tips = data.content[0].text;
+
+    return response.success({ tips, habitName });
+  } catch (err) {
+    console.error('getHabitTips error:', err);
+    return response.serverError('Kunde inte generera tips');
+  }
+};

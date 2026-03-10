@@ -122,6 +122,17 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             arn: ${self:custom.cognitoArn}
+  getHabitTips:
+    handler: functions/insights/handler.getHabitTips
+    timeout: 30
+    events:
+      - http:
+          path: /insights/tips
+          method: post
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            arn: ${self:custom.cognitoArn}
             
   # --- STATISTICS ---
   getStatistics:
