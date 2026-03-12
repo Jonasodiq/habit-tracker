@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   card:            { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F9FAFB', borderRadius: 12, padding: 16, marginBottom: 12, borderLeftWidth: 4, gap: 12 },
   cardDone:        { opacity: 0.6 },
   checkboxWrapper: { padding: 4 },
-  checkbox:        { width: 28, height: 28, borderRadius: 14, borderWidth: 2, justifyContent: 'center', alignItems: 'center' },
+  checkbox:        { width: 42, height: 42, borderRadius: 24, borderWidth: 2, justifyContent: 'center', alignItems: 'center' },
   checkmark:       { color: '#fff', fontSize: 16, fontWeight: '700' },
   cardContent:     { flex: 1, gap: 2 },
   name:            { fontSize: 16, fontWeight: '600', color: '#11181C' },

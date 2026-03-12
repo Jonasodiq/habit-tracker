@@ -136,7 +136,7 @@ export default function InsightsScreen() {
             {modalLoading ? (
               <View style={styles.modalLoading}>
                 <ActivityIndicator size="large" color="#6C63FF" />
-                <Text style={styles.modalLoadingText}>Claude tänker... 🤖</Text>
+                <Text style={styles.modalLoadingText}>AI tänker... 🤖</Text>
               </View>
             ) : (
               <Text style={styles.tipsText}>{tipsText}</Text>

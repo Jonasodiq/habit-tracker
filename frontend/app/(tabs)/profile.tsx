@@ -1,14 +1,42 @@
-import { StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useState, useCallback } from 'react';
+import { StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { useAuth } from '@/src/contexts/AuthContext';
+import { logout } from '@/src/services/authService';
+import apiClient from '@/src/services/apiClient';
+
+interface UserProfile {
+  userId: string;
+  email: string;
+  name: string;
+  createdAt: string;
+}
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const [user, setUser]       = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadUser();
+    }, [])
+  );
+
+  async function loadUser() {
+    try {
+      setLoading(true);
+      const { data } = await apiClient.get('/auth/users/me');
+      setUser(data.user);
+    } catch (err) {
+      console.error('loadUser error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function handleLogout() {
     Alert.alert('Logga ut', 'Är du säker?', [
@@ -24,6 +52,10 @@ export default function ProfileScreen() {
     ]);
   }
 
+  const memberSince = user?.createdAt
+    ? new Date(user.createdAt).toLocaleDateString('sv-SE', { year: 'numeric', month: 'long' })
+    : '';
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#c1ddd5', dark: '#353636' }}
@@ -37,24 +69,25 @@ export default function ProfileScreen() {
       }
     >
       <ThemedView style={{ flex: 1, alignItems: 'center', paddingTop: 32 }}>
-
-        <ThemedText type="title" style={{ marginBottom: 4 }}>
-          {user?.name || 'Användare'}
-        </ThemedText>
-        <ThemedText type="subtitle" style={{ marginBottom: 24 }}>
-          {user?.email || ''}
-        </ThemedText>
-
-        <ThemedText style={{ color: '#aaa', fontSize: 14 }}>
-          Medlem sedan {user?.createdAt
-            ? new Date(user.createdAt).toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })
-            : ''}
-        </ThemedText>
+        {loading ? (
+          <ActivityIndicator size="large" color="#6C63FF" />
+        ) : (
+          <>
+            <ThemedText type="title" style={{ marginBottom: 4 }}>
+              {user?.name || 'Användare'}
+            </ThemedText>
+            <ThemedText type="subtitle" style={{ marginBottom: 16 }}>
+              {user?.email || ''}
+            </ThemedText>
+            <ThemedText style={{ color: '#aaa', fontSize: 14, marginBottom: 32 }}>
+              Medlem sedan {memberSince}
+            </ThemedText>
+          </>
+        )}
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <ThemedText style={styles.logoutText}>Logga ut</ThemedText>
         </TouchableOpacity>
-
       </ThemedView>
     </ParallaxScrollView>
   );
@@ -62,7 +95,7 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   logoutButton: {
-    marginTop: 32,
+    marginTop: 16,
     backgroundColor: '#FF3B30',
     paddingVertical: 12,
     paddingHorizontal: 48,
