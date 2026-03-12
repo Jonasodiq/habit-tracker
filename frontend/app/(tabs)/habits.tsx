@@ -123,12 +123,6 @@ export default function HabitsScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Mina vanor</Text>
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => router.push('/(tabs)/habit-form' as any)}
-        >
-          <Text style={styles.addButtonText}>+</Text>
-        </TouchableOpacity>
       </View>
 
       <HabitList
