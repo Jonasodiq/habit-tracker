@@ -1,14 +1,16 @@
 import { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
-import { router, useFocusEffect } from 'expo-router';
+import { View, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { useFocusEffect } from 'expo-router';
+import * as Progress from 'react-native-progress';
 import { getHabits, deleteHabit, Habit } from '@/src/services/habitService';
 import { getCompletions, completeHabit, deleteCompletion, Completion } from '@/src/services/completionService';
 import HabitList from '@/components/HabitList';
+import { Palette, Spacing, Typography } from '@/constants/theme';
 
 export default function HabitsScreen() {
-  const [habits, setHabits]         = useState<Habit[]>([]);
+  const [habits, setHabits] = useState<Habit[]>([]);
   const [completions, setCompletions] = useState<Completion[]>([]);
-  const [loading, setLoading]       = useState(true);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   useFocusEffect(
@@ -50,40 +52,34 @@ export default function HabitsScreen() {
   }
 
   async function handleComplete(habitId: string) {
-  const today = new Date().toISOString().slice(0, 10);
-  const existingCompletion = completions.find(
-    (c) => c.habitId === habitId && c.completedDate === today
-  );
-
-  // console.log('habitId:', habitId);
-  // console.log('today:', today);
-  // console.log('existingCompletion:', existingCompletion);
-  // console.log('completions:', completions);
-
-  try {
-    if (existingCompletion) {
-      // Avmarkera
-      await deleteCompletion(existingCompletion.completionId);
-      setCompletions((prev) => prev.filter((c) => c.completionId !== existingCompletion.completionId));
-      setHabits((prev) =>
-        prev.map((h) =>
-          h.habitId === habitId ? { ...h, streak: Math.max((h.streak ?? 0) - 1, 0) } : h
-        )
-      );
-    } else {
-      // Markera
-      const result = await completeHabit(habitId);
-      setCompletions((prev) => [...prev, result]);
-      setHabits((prev) =>
-        prev.map((h) =>
-          h.habitId === habitId ? { ...h, streak: (h.streak ?? 0) + 1 } : h
-        )
-      );
+    const today = new Date().toISOString().slice(0, 10);
+    const existingCompletion = completions.find(
+      (c) => c.habitId === habitId && c.completedDate === today
+    );
+    try {
+      if (existingCompletion) {
+        // Uncheck
+        await deleteCompletion(existingCompletion.completionId);
+        setCompletions((prev) => prev.filter((c) => c.completionId !== existingCompletion.completionId));
+        setHabits((prev) =>
+          prev.map((h) =>
+            h.habitId === habitId ? { ...h, streak: Math.max((h.streak ?? 0) - 1, 0) } : h
+          )
+        );
+      } else {
+        // Check
+        const result = await completeHabit(habitId);
+        setCompletions((prev) => [...prev, result]);
+        setHabits((prev) =>
+          prev.map((h) =>
+            h.habitId === habitId ? { ...h, streak: (h.streak ?? 0) + 1 } : h
+          )
+        );
+      }
+    } catch {
+      Alert.alert('Fel', 'Kunde inte uppdatera vanan');
     }
-  } catch {
-    Alert.alert('Fel', 'Kunde inte uppdatera vanan');
   }
-}
 
   async function handleDelete(habitId: string) {
     Alert.alert('Ta bort vana', 'Är du säker?', [
@@ -103,27 +99,58 @@ export default function HabitsScreen() {
     ]);
   }
 
-  // Bygg set av habitIds genomförda idag
   const today = new Date().toISOString().slice(0, 10);
   const completedToday = new Set(
-    completions
-      .filter((c) => c.completedDate === today)
-      .map((c) => c.habitId)
+    completions.filter((c) => c.completedDate === today).map((c) => c.habitId)
   );
+
+  // Today's date in Swedish
+  const dateStr = new Date().toLocaleDateString('sv-SE', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
+
+  const completedCount = completedToday.size;
+  const totalCount = habits.length;
 
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#6C63FF" />
+        <ActivityIndicator size="large" color={Palette.primary} />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Mina vanor</Text>
+        <View>
+          <Text style={styles.date}>{dateStr}</Text>
+          <Text style={styles.title}>Mina vanor</Text>
+        </View>
+        {totalCount > 0 && (
+          <View>
+            <Text> {completedCount}/{totalCount} </Text>
+          </View>
+        )}
       </View>
+
+      {/* Progress bar */}
+      {totalCount > 0 && (
+        <Progress.Bar
+          progress={completedCount / totalCount}
+          width={null}
+          height={8}
+          color={Palette.primary}
+          unfilledColor={Palette.gray200}
+          borderWidth={0}
+          borderRadius={99}
+          animated={true}
+          style={styles.progressBar}
+        />
+      )}
 
       <HabitList
         habits={habits}
@@ -138,10 +165,10 @@ export default function HabitsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container:     { flex: 1, padding: 24, paddingTop: 60, backgroundColor: '#fff' },
-  center:        { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  header:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
-  title:         { fontSize: 28, fontWeight: '700', color: '#11181C' },
-  addButton:     { width: 44, height: 44, borderRadius: 22, backgroundColor: '#6C63FF', justifyContent: 'center', alignItems: 'center' },
-  addButtonText: { color: '#fff', fontSize: 28, fontWeight: '300', lineHeight: 32 },
+  container:   { flex: 1, paddingTop: 60, backgroundColor: Palette.gray100 },
+  center:      { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  header:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', paddingHorizontal: Spacing.xl, marginBottom: Spacing.md },
+  date:        { fontSize: Typography.sm, color: Palette.gray400, textTransform: 'capitalize', marginBottom: 2 },
+  title:       { fontSize: Typography.xxxl, fontWeight: Typography.extrabold, color: Palette.gray900 },
+  progressBar: { marginHorizontal: Spacing.xl, marginBottom: Spacing.xl },
 });
