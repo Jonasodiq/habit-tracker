@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { useRef, useEffect } from 'react';
+import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
 
 interface Props {
   aiInsight: string | null;
@@ -7,6 +8,30 @@ interface Props {
   generatedAt: string;
   dataPoints: number;
   fromCache: boolean;
+}
+
+// Parsar text med **bold** markdown
+function parseInsightText(text: string) {
+  const lines = text.split('\n').filter(line => line.trim() !== '');
+  
+  return lines.map((line, lineIndex) => {
+    const parts = line.split(/\*\*(.*?)\*\*/g);
+    const hasBold = parts.some((_, i) => i % 2 === 1);
+    const isFirst = lineIndex === 0;
+
+    return (
+      <View key={lineIndex}>
+        <Text style={styles.aiText}>
+          {parts.map((part, i) =>
+            i % 2 === 1
+              ? <Text key={i} style={styles.aiBold}>{part}</Text>
+              : <Text key={i}>{part}</Text>
+          )}
+        </Text>
+        {hasBold && isFirst && <View style={styles.separator} />}
+      </View>
+    );
+  });
 }
 
 export default function InsightCards({ aiInsight, fallbackInsights, generatedAt, dataPoints, fromCache }: Props) {
@@ -41,10 +66,10 @@ export default function InsightCards({ aiInsight, fallbackInsights, generatedAt,
         <Text style={styles.meta}>{fromCache ? '💾 cachad' : `${dataPoints} datapunkter`}</Text>
       </View>
 
-      {/* Claude AI insikt */}
+      {/* AI insikt */}
       {aiInsight && (
         <Animated.View style={[styles.aiCard, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-          <Text style={styles.aiText}>{aiInsight}</Text>
+          {parseInsightText(aiInsight)}
         </Animated.View>
       )}
 
@@ -63,16 +88,18 @@ export default function InsightCards({ aiInsight, fallbackInsights, generatedAt,
 }
 
 const styles = StyleSheet.create({
-  container:    { backgroundColor: '#F9FAFB', borderRadius: 16, padding: 16, marginBottom: 16 },
-  header:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  title:        { fontSize: 16, fontWeight: '700', color: '#11181C' },
-  meta:         { fontSize: 12, color: '#9CA3AF' },
-  aiCard:       { backgroundColor: '#EEF2FF', borderWidth: 1, borderColor: '#C7D2FE', borderRadius: 12, padding: 16, marginBottom: 10 },
-  aiText:       { fontSize: 14, color: '#11181C', lineHeight: 22 },
-  fallbackCard: { backgroundColor: '#F9FAFB', borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 12, padding: 14, marginBottom: 10 },
-  fallbackText: { fontSize: 14, color: '#11181C', lineHeight: 20 },
-  empty:        { alignItems: 'center', padding: 16, gap: 8 },
+  container:    { backgroundColor: Palette.gray50, borderRadius: Radius.lg, padding: Spacing.lg, marginBottom: Spacing.lg },
+  header:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.md },
+  title:        { fontSize: Typography.md, fontWeight: Typography.bold, color: Palette.gray900 },
+  meta:         { fontSize: Typography.xs, color: Palette.gray400 },
+  aiCard:       { backgroundColor: Palette.primaryLight, borderWidth: 3, borderColor: Palette.primary + '55', borderRadius: Radius.md, padding: Spacing.lg, gap: Spacing.sm },
+  aiText:       { fontSize: Typography.base, color: Palette.gray900, lineHeight: 22 },
+  aiBold:       { fontWeight: Typography.bold, color: Palette.gray900 },
+  separator:    { height: 1, backgroundColor: Palette.primary + '55', marginVertical: Spacing.sm },
+  fallbackCard: { backgroundColor: Palette.gray50, borderWidth: 1, borderColor: Palette.gray200, borderRadius: Radius.md, padding: Spacing.md, marginBottom: Spacing.sm },
+  fallbackText: { fontSize: Typography.base, color: Palette.gray900, lineHeight: 20 },
+  empty:        { alignItems: 'center', padding: Spacing.lg, gap: Spacing.sm },
   emptyIcon:    { fontSize: 32 },
-  emptyText:    { fontSize: 13, color: '#687076', textAlign: 'center', lineHeight: 18 },
-  generatedAt:  { fontSize: 11, color: '#9CA3AF', textAlign: 'right', marginTop: 4 },
+  emptyText:    { fontSize: Typography.sm, color: Palette.gray500, textAlign: 'center', lineHeight: 18 },
+  generatedAt:  { fontSize: Typography.xs, color: Palette.gray400, textAlign: 'right', marginTop: Spacing.xs },
 });
