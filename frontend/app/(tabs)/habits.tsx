@@ -1,103 +1,72 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useFocusEffect } from 'expo-router';
-import * as Progress from 'react-native-progress';
-import { getHabits, deleteHabit, Habit } from '@/src/services/habitService';
-import { getCompletions, completeHabit, deleteCompletion, Completion } from '@/src/services/completionService';
+import { deleteHabit } from '@/src/services/habitService';
+import { completeHabit, deleteCompletion } from '@/src/services/completionService';
+import { useHabits } from '@/src/contexts/HabitsContext';
 import HabitList from '@/components/HabitList';
 import { Palette, Spacing, Typography } from '@/constants/theme';
+import * as Progress from 'react-native-progress';
 
 export default function HabitsScreen() {
-  const [habits, setHabits] = useState<Habit[]>([]);
-  const [completions, setCompletions] = useState<Completion[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const {
+  habits,
+  completions,
+  loading,
+  refreshing,
+  loadAll,
+  refresh,
+  setHabits,
+  setCompletions,
+} = useHabits();
 
-  useFocusEffect(
-    useCallback(() => {
-      loadAll();
-    }, [])
+useFocusEffect(
+  useCallback(() => {
+    loadAll();
+  }, [])
+);
+
+ async function handleComplete(habitId: string) {
+  const today = new Date().toISOString().slice(0, 10);
+  const existingCompletion = completions.find(
+    (c) => c.habitId === habitId && c.completedDate === today
   );
-
-  async function loadAll() {
-    try {
-      setLoading(true);
-      const [habitsData, completionsData] = await Promise.all([
-        getHabits(),
-        getCompletions(),
-      ]);
-      setHabits(habitsData);
-      setCompletions(completionsData);
-    } catch {
-      Alert.alert('Fel', 'Kunde inte hämta vanor');
-    } finally {
-      setLoading(false);
+  try {
+    if (existingCompletion) {
+      await deleteCompletion(existingCompletion.completionId);
+      setCompletions(completions.filter((c) => c.completionId !== existingCompletion.completionId));
+      setHabits(habits.map((h) =>
+        h.habitId === habitId ? { ...h, streak: Math.max((h.streak ?? 0) - 1, 0) } : h
+      ));
+    } else {
+      const result = await completeHabit(habitId);
+      setCompletions([...completions, result]);
+      setHabits(habits.map((h) =>
+        h.habitId === habitId ? { ...h, streak: (h.streak ?? 0) + 1 } : h
+      ));
     }
+  } catch {
+    Alert.alert('Fel', 'Kunde inte uppdatera vanan');
   }
+}
 
-  async function handleRefresh() {
-    try {
-      setRefreshing(true);
-      const [habitsData, completionsData] = await Promise.all([
-        getHabits(),
-        getCompletions(),
-      ]);
-      setHabits(habitsData);
-      setCompletions(completionsData);
-    } catch {
-      Alert.alert('Fel', 'Kunde inte uppdatera');
-    } finally {
-      setRefreshing(false);
-    }
-  }
-
-  async function handleComplete(habitId: string) {
-    const today = new Date().toISOString().slice(0, 10);
-    const existingCompletion = completions.find(
-      (c) => c.habitId === habitId && c.completedDate === today
-    );
-    try {
-      if (existingCompletion) {
-        // Uncheck
-        await deleteCompletion(existingCompletion.completionId);
-        setCompletions((prev) => prev.filter((c) => c.completionId !== existingCompletion.completionId));
-        setHabits((prev) =>
-          prev.map((h) =>
-            h.habitId === habitId ? { ...h, streak: Math.max((h.streak ?? 0) - 1, 0) } : h
-          )
-        );
-      } else {
-        // Check
-        const result = await completeHabit(habitId);
-        setCompletions((prev) => [...prev, result]);
-        setHabits((prev) =>
-          prev.map((h) =>
-            h.habitId === habitId ? { ...h, streak: (h.streak ?? 0) + 1 } : h
-          )
-        );
-      }
-    } catch {
-      Alert.alert('Fel', 'Kunde inte uppdatera vanan');
-    }
-  }
-
-  async function handleDelete(habitId: string) {
-    Alert.alert('Ta bort vana', 'Är du säker?', [
-      { text: 'Avbryt', style: 'cancel' },
-      {
-        text: 'Ta bort',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await deleteHabit(habitId);
-            setHabits((prev) => prev.filter((h) => h.habitId !== habitId));
-          } catch {
-            Alert.alert('Fel', 'Kunde inte ta bort vanan');
-          }
-        },
+async function handleDelete(habitId: string) {
+  Alert.alert('Ta bort vana', 'Är du säker?', [
+    { text: 'Avbryt', style: 'cancel' },
+    {
+      text: 'Ta bort',
+      style: 'destructive',
+      onPress: async () => {
+        try {
+          await deleteHabit(habitId);
+          setHabits(habits.filter((h) => h.habitId !== habitId));
+        } catch {
+          Alert.alert('Fel', 'Kunde inte ta bort vanan');
+        }
       },
-    ]);
-  }
+    },
+  ]);
+}
 
   const today = new Date().toISOString().slice(0, 10);
   const completedToday = new Set(
@@ -156,7 +125,7 @@ export default function HabitsScreen() {
         habits={habits}
         completedToday={completedToday}
         refreshing={refreshing}
-        onRefresh={handleRefresh}
+        onRefresh={refresh}
         onComplete={handleComplete}
         onDelete={handleDelete}
       />

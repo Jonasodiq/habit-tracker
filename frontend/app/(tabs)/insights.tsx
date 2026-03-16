@@ -125,7 +125,7 @@ export default function InsightsScreen() {
           }
         >
           {loading ? (
-            <ActivityIndicator size="large" color={Palette.primary} style={{ marginTop: 32 }} />
+            <ActivityIndicator size="large" color={Palette.primary} style={{ marginTop: 32 }} />          
           ) : (
             <>
               {/* AI-insikter */}
