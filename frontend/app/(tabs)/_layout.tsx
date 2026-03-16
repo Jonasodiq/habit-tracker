@@ -41,7 +41,7 @@ export default function TabLayout() {
         options={{
           title: 'Vanor',
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={26} name="checkmark.circle.fill" color={color} />
+            <IconSymbol size={32} name="checkmark.circle.fill" color={color} />
           ),
         }}
       />
@@ -52,7 +52,7 @@ export default function TabLayout() {
         options={{
           title: 'Stats',
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={26} name="chart.bar.fill" color={color} />
+            <IconSymbol size={32} name="chart.bar.fill" color={color} />
           ),
         }}
       />
@@ -73,7 +73,7 @@ export default function TabLayout() {
         options={{
           title: 'AI',
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={26} name="sparkles" color={color} />
+            <IconSymbol size={32} name="sparkles" color={color} />
           ),
         }}
       />
@@ -84,7 +84,7 @@ export default function TabLayout() {
         options={{
           title: 'Profil',
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={26} name="person.crop.circle.fill" color={color} />
+            <IconSymbol size={32} name="person.crop.circle.fill" color={color} />
           ),
         }}
       />
