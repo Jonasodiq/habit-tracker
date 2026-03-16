@@ -10,6 +10,7 @@ export const sampleHabits: Habit[] = [
     icon: '💪',
     frequency: 'daily',
     isActive: true,
+    streak: 0,
     createdAt: new Date().toISOString(),
   },
   {
@@ -21,6 +22,7 @@ export const sampleHabits: Habit[] = [
     icon: '📚',
     frequency: 'daily',
     isActive: true,
+    streak: 0,
     createdAt: new Date().toISOString(),
   },
   {
@@ -32,6 +34,7 @@ export const sampleHabits: Habit[] = [
     icon: '🧘',
     frequency: 'daily',
     isActive: true,
+    streak: 0,
     createdAt: new Date().toISOString(),
   },
   {
@@ -43,6 +46,7 @@ export const sampleHabits: Habit[] = [
     icon: '💧',
     frequency: 'daily',
     isActive: true,
+    streak: 0,
     createdAt: new Date().toISOString(),
   },
 ];
