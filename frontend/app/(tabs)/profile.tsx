@@ -65,11 +65,9 @@ export default function ProfileScreen() {
       const { data } = await apiClient.patch('/auth/users/me', {
         name: editName.trim(),
       });
-      console.log('UPDATE RESPONSE:', JSON.stringify(data));
       setUser(data.user);
       setEditModal(false);
     } catch (err) {
-      console.error('UPDATE ERROR:', err);
       Alert.alert('Fel', 'Kunde inte uppdatera profilen.');
     } finally {
       setSaving(false);
