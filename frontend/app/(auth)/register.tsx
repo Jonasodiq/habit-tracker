@@ -150,92 +150,21 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Palette.white,
-  },
-  scroll: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: Spacing.xl,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: Spacing.xxxl,
-  },
-  emoji: {
-    fontSize: 56,
-    marginBottom: Spacing.sm,
-  },
-  appName: {
-    fontSize: Typography.sm,
-    fontWeight: Typography.bold,
-    color: Palette.primary,
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-    marginBottom: Spacing.sm,
-  },
-  title: {
-    fontSize: Typography.xxxl,
-    fontWeight: Typography.extrabold,
-    color: Palette.gray900,
-    marginBottom: Spacing.xs,
-  },
-  subtitle: {
-    fontSize: Typography.base,
-    color: Palette.gray500,
-    textAlign: 'center',
-  },
-  form: {
-    gap: Spacing.md,
-  },
-  inputWrapper: {
-    gap: Spacing.xs,
-  },
-  label: {
-    fontSize: Typography.sm,
-    fontWeight: Typography.semibold,
-    color: Palette.gray600,
-  },
-  input: {
-    borderWidth: 1.5,
-    borderColor: Palette.gray200,
-    borderRadius: Radius.md,
-    padding: Spacing.md,
-    fontSize: Typography.md,
-    color: Palette.gray900,
-    backgroundColor: Palette.gray50,
-  },
-  button: {
-    backgroundColor: Palette.primary,
-    borderRadius: Radius.lg,
-    padding: Spacing.lg,
-    alignItems: 'center',
-    marginTop: Spacing.sm,
-    shadowColor: Palette.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  buttonDisabled: {
-    opacity: 0.7,
-  },
-  buttonText: {
-    color: Palette.white,
-    fontWeight: Typography.bold,
-    fontSize: Typography.md,
-  },
-  linkButton: {
-    alignItems: 'center',
-    paddingVertical: Spacing.sm,
-  },
-  linkText: {
-    fontSize: Typography.base,
-    color: Palette.gray500,
-  },
-  linkBold: {
-    color: Palette.primary,
-    fontWeight: Typography.bold,
-  },
+  container:      { flex: 1, backgroundColor: Palette.white },
+  scroll:         { flexGrow: 1, justifyContent: 'center', padding: Spacing.xl },
+  header:         { alignItems: 'center', marginBottom: Spacing.xxxl },
+  emoji:          { fontSize: 56, marginBottom: Spacing.sm },
+  appName:        { fontSize: Typography.sm, fontWeight: Typography.bold, color: Palette.primary, letterSpacing: 2, textTransform: 'uppercase', marginBottom: Spacing.sm },
+  title:          { fontSize: Typography.xxxl, fontWeight: Typography.extrabold, color: Palette.gray900, marginBottom: Spacing.xs },
+  subtitle:       { fontSize: Typography.base, color: Palette.gray500, textAlign: 'center' },
+  form:           { gap: Spacing.md },
+  inputWrapper:   { gap: Spacing.xs },
+  label:          { fontSize: Typography.sm, fontWeight: Typography.semibold, color: Palette.gray600 },
+  input:          { borderWidth: 1.5, borderColor: Palette.gray200, borderRadius: Radius.md, padding: Spacing.md, fontSize: Typography.md, color: Palette.gray900, backgroundColor: Palette.gray50 },
+  button:         { backgroundColor: Palette.primary, borderRadius: Radius.lg, padding: Spacing.lg, alignItems: 'center', marginTop: Spacing.sm, shadowColor: Palette.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 6 },
+  buttonDisabled: { opacity: 0.7 },
+  buttonText:     { color: Palette.white, fontWeight: Typography.bold, fontSize: Typography.md },
+  linkButton:     { alignItems: 'center', paddingVertical: Spacing.sm },
+  linkText:       { fontSize: Typography.base, color: Palette.gray500 },
+  linkBold:       { color: Palette.primary, fontWeight: Typography.bold },
 });

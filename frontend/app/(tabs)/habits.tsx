@@ -6,7 +6,7 @@ import { completeHabit, deleteCompletion } from '@/src/services/completionServic
 import { useHabits } from '@/src/contexts/HabitsContext';
 import HabitList from '@/components/HabitList';
 import { Palette, Spacing, Typography } from '@/constants/theme';
-import * as Progress from 'react-native-progress';
+import * as Progress from 'react-native-progress'; // https://www.npmjs.com/package/react-native-progress?activeTab=readme
 
 export default function HabitsScreen() {
   const {

@@ -4,6 +4,25 @@ import { Calendar } from 'react-native-calendars';
 import Svg, { Circle } from 'react-native-svg';
 import { Completion } from '@/src/services/completionService';
 import { Habit } from '@/src/services/habitService';
+import { LocaleConfig } from 'react-native-calendars';
+
+LocaleConfig.locales['sv'] = {
+  monthNames: [
+    'Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni',
+    'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December',
+  ],
+  monthNamesShort: [
+    'Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec',
+  ],
+  dayNames: [
+    'Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag',
+  ],
+  dayNamesShort: ['Sön', 'Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör'],
+  today: 'Idag',
+};
+
+LocaleConfig.defaultLocale = 'sv';
 
 interface Props {
   habits: Habit[];
@@ -51,7 +70,7 @@ export default function HabitCalendar({ habits, completions }: Props) {
       <Calendar
         markingType="multi-dot"
         markedDates={markedDates}
-        onDayPress={(day: any) => setSelectedDate(day.dateString)}
+        onDayPress={(day: any) => setSelectedDate(day.dateString)}       
         dayComponent={({ date, state, marking }: any) => {
           const isToday    = date.dateString === todayStr;
           const isSelected = date.dateString === selectedDate;

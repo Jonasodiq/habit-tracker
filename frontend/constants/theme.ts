@@ -19,6 +19,7 @@ export const Palette = {
   // Framgång — Grön mint
   success:        '#00C896',
   successLight:   '#D4F7EE',
+  successDark:    '#11a800',
 
   // Varning — Amber
   warning:        '#FFB830',
@@ -126,17 +127,24 @@ export const Shadows = {
   },
   md: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
+    shadowOffset: { width: 4, height: 6 },
+    shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 4,
   },
   lg: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
+    shadowOffset: { width: 4, height: 8 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
     elevation: 8,
+  },
+  xl: {
+    shadowColor: '#000',
+    shadowOffset: { width: 4, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 10,
   },
   primary: {
     shadowColor: '#2BBFFF',

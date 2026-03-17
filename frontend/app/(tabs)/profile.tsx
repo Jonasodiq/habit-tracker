@@ -28,7 +28,6 @@ export default function ProfileScreen() {
   const [loading, setLoading]       = useState(true);
   const [editModal, setEditModal]   = useState(false);
   const [editName, setEditName]     = useState('');
-  const [editEmail, setEditEmail]   = useState('');
   const [saving, setSaving]         = useState(false);
 
   useFocusEffect(
@@ -51,7 +50,6 @@ export default function ProfileScreen() {
 
   function handleOpenEdit() {
     setEditName(user?.name || '');
-    setEditEmail(user?.email || '');
     setEditModal(true);
   }
 
@@ -125,7 +123,7 @@ export default function ProfileScreen() {
           <Text style={styles.userName} key={user?.name}>{user?.name || 'Användare'}</Text>
           <Text style={styles.userEmail}>{user?.email || ''}</Text>
           <View style={styles.memberBadge}>
-            <Text style={styles.memberText}>🗓 Medlem sedan {memberSince}</Text>
+            <Text style={styles.memberText}>Medlem sedan {memberSince}</Text>
           </View>
         </View>
 
@@ -140,11 +138,6 @@ export default function ProfileScreen() {
             <Text style={styles.infoLabel}>Email</Text>
             <Text style={styles.infoValue}>{user?.email || '-'}</Text>
           </View>
-          <View style={styles.divider} />
-          <TouchableOpacity style={styles.infoRow} onPress={handleOpenEdit} activeOpacity={0.7}>
-            <Text style={styles.infoLabel}>Redigera profil</Text>
-            <Text style={styles.infoArrow}>›</Text>
-          </TouchableOpacity>
         </View>
 
         {/* App info */}
@@ -220,7 +213,7 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen:         { flex: 1, backgroundColor: Palette.gray50 },
+  screen:         { flex: 1, backgroundColor: Palette.gray100 },
   content:        { paddingBottom: 100 },
   center:         { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
@@ -228,10 +221,10 @@ const styles = StyleSheet.create({
   header:         { alignItems: 'center', paddingBottom: Spacing.xl, marginBottom: Spacing.lg },
   headerBg:       { position: 'absolute', top: 0, left: 0, right: 0, height: 160, backgroundColor: Palette.primaryLight },
   avatarWrapper:  { marginTop: 100, position: 'relative' },
-  avatarCircle:   { width: 100, height: 100, borderRadius: Radius.full, backgroundColor: Palette.primary, justifyContent: 'center', alignItems: 'center', borderWidth: 4, borderColor: Palette.white, ...Shadows.primary },
+  avatarCircle:   { width: 100, height: 100, borderRadius: Radius.full, backgroundColor: Palette.primary, justifyContent: 'center', alignItems: 'center', borderWidth: 4, borderColor: Palette.white, ...Shadows.lg },
   avatarText:     { fontSize: 40, fontWeight: Typography.bold, color: Palette.white },
-  editAvatarBtn:  { position: 'absolute', bottom: 0, right: 0, width: 30, height: 30, borderRadius: Radius.full, backgroundColor: Palette.white, justifyContent: 'center', alignItems: 'center', ...Shadows.sm },
-  editAvatarText: { fontSize: 14 },
+  editAvatarBtn:  { position: 'absolute', bottom: 6, right: 0, width: 30, height: 30, borderRadius: Radius.full, backgroundColor: Palette.white, justifyContent: 'center', alignItems: 'center', ...Shadows.lg },
+  editAvatarText: { fontSize: 12 },
   userName:       { fontSize: Typography.xxl, fontWeight: Typography.extrabold, color: Palette.gray900, marginTop: Spacing.xl },
   userEmail:      { fontSize: Typography.base, color: Palette.gray500, marginTop: 4 },
   memberBadge:    { backgroundColor: Palette.gray100, borderRadius: Radius.full, paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs, marginTop: Spacing.sm },
@@ -242,7 +235,6 @@ const styles = StyleSheet.create({
   infoRow:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: Spacing.lg },
   infoLabel:      { fontSize: Typography.base, color: Palette.gray500 },
   infoValue:      { fontSize: Typography.base, fontWeight: Typography.semibold, color: Palette.gray900, flex: 1, textAlign: 'right' },
-  infoArrow:      { fontSize: Typography.xl, color: Palette.gray300 },
   divider:        { height: 1, backgroundColor: Palette.gray100, marginHorizontal: Spacing.lg },
 
   // Logout

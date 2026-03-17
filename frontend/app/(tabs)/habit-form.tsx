@@ -204,7 +204,7 @@ export default function HabitFormScreen() {
 
         {/* Save button */}
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: color }, Shadows.primary]}
+          style={[styles.button, { backgroundColor: Palette.successDark }, Shadows.primary]}
           onPress={handleSubmit}
           disabled={loading}
           activeOpacity={0.85}
