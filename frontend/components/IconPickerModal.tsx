@@ -28,7 +28,7 @@ export default function IconPickerModal({ visible, selectedIcon, selectedColor, 
           </TouchableOpacity>
         </View>
         <FlatList
-          data={[...ICONS_DEFAULT, ...ICONS_MORE]}
+          data={[...ICONS_MORE]}
           keyExtractor={(item) => item}
           numColumns={7}
           contentContainerStyle={styles.modalGrid}

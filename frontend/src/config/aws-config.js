@@ -7,7 +7,7 @@ export const AWS_CONFIG = {
 
 // API Configuration
 export const API_CONFIG = {
-  baseURL: 'https://din-api.execute-api.eu-north-1.amazonaws.com/dev',
+  baseURL: 'https://o3ltnav2ad.execute-api.eu-north-1.amazonaws.com/dev',
 };
 
 export default AWS_CONFIG;

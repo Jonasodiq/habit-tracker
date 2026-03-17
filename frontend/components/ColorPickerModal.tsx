@@ -24,7 +24,7 @@ export default function ColorPickerModal({ visible, selectedColor, onSelect, onC
           </TouchableOpacity>
         </View>
         <FlatList
-          data={[...COLORS_DEFAULT, ...COLORS_MORE]}
+          data={[...COLORS_MORE]}
           keyExtractor={(item) => item}
           numColumns={7}
           contentContainerStyle={styles.modalGrid}

@@ -110,7 +110,7 @@ export default function InsightsScreen() {
           </View>
         </View>
 
-        {/* Scrollbart innehåll */}
+        {/* Scroll */}
         <ScrollView
           style={styles.container}
           contentContainerStyle={styles.content}
@@ -254,9 +254,9 @@ const styles = StyleSheet.create({
   container:        { flex: 1 },
   content:          { padding: Spacing.xl, paddingBottom: 100, gap: Spacing.lg },
   headerText:       { flex: 1 },
-  refreshBtn:         { backgroundColor: Palette.primary, borderRadius: Radius.lg, paddingVertical: Spacing.lg, paddingHorizontal: Spacing.xl, alignSelf: 'center', marginTop: -Spacing.xxxl },
+  refreshBtn:       { backgroundColor: Palette.primary, borderRadius: Radius.lg, paddingVertical: Spacing.lg, paddingHorizontal: Spacing.xl, alignSelf: 'center', marginTop: -Spacing.xxxl },
   refreshBtnDisabled: { opacity: 0.6 },
-  refreshBtnText:     { color: Palette.white, fontWeight: Typography.semibold, fontSize: Typography.lg },
+  refreshBtnText:   { color: Palette.white, fontWeight: Typography.semibold, fontSize: Typography.lg },
 
   // Svagaste vana
   weakCard:         { backgroundColor: Palette.white, borderRadius: Radius.lg, padding: Spacing.lg, gap: Spacing.md, marginTop: 50 },
@@ -296,6 +296,6 @@ const styles = StyleSheet.create({
   tipsBody:         { gap: Spacing.sm },
   tipsBold:         { fontWeight: Typography.bold, color: Palette.gray900 },
   tipsSeparator:    { height: 1, backgroundColor: Palette.primary + '33', marginVertical: Spacing.sm },
-  okBtn:            { backgroundColor: Palette.primary, borderRadius: Radius.lg, padding: Spacing.md, alignItems: 'center', marginTop: Spacing.xl },
+  okBtn:            { backgroundColor: Palette.primary, borderRadius: Radius.lg, padding: Spacing.md, alignItems: 'center', marginTop: Spacing.xl, marginBottom: Spacing.xxxl },
   okBtnText:        { color: Palette.white, fontWeight: Typography.bold, fontSize: Typography.lg },
 });
