@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   container:      { flex: 1, backgroundColor: Palette.white, padding: Spacing.xl, justifyContent: 'center' },
   header:         { alignItems: 'center', marginBottom: Spacing.xxxl, },
   emoji:          { fontSize: 56, marginBottom: Spacing.sm, },
-  appName:        { fontSize: Typography.sm, fontWeight: Typography.bold, color: Palette.primary, letterSpacing: 2, textTransform: 'uppercase', marginBottom: Spacing.sm, },
+  appName:        { fontFamily: "Roboto",fontSize: Typography.xl, fontWeight: Typography.bold, color: Palette.primary, letterSpacing: 2, textTransform: 'uppercase', marginBottom: Spacing.sm, },
   title:          { fontSize: Typography.xxxl, fontWeight: Typography.extrabold, color: Palette.gray900, marginBottom: Spacing.xs, },
   subtitle:       { fontSize: Typography.base, color: Palette.gray500, },
   form:           { gap: Spacing.md, },

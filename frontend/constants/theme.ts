@@ -50,7 +50,7 @@ export const Palette = {
 };
 
 // ─── Temafärger ─────────────────────────────────
-export const Colors = {
+export const Colors = {   
   light: {
     text:            Palette.gray900,
     background:      Palette.white,

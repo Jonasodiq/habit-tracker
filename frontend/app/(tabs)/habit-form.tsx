@@ -91,11 +91,11 @@ export default function HabitFormScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
+          <View style={{ width: 36 }} />
+          <Text style={styles.title}>{isEditing ? 'Redigera vana' : 'Ny vana'}</Text>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
             <Text style={styles.backText}>✕</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>{isEditing ? 'Redigera vana' : 'Ny vana'}</Text>
-          <View style={{ width: 36 }} />
         </View>
 
         {/* Preview card */}
@@ -212,7 +212,7 @@ export default function HabitFormScreen() {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>{isEditing ? '💾 Spara ändringar' : '✨ Skapa vana'}</Text>
+            <Text style={styles.buttonText}>{isEditing ? 'Spara ändringar' : 'Skapa vana'}</Text>
           )}
         </TouchableOpacity>
 
@@ -245,8 +245,8 @@ const styles = StyleSheet.create({
   container:        { flex: 1, backgroundColor: Palette.white },
   content:          { padding: Spacing.xl, paddingTop: 60, paddingBottom: 48 },
   header:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.xl },
-  backBtn:          { width: 36, height: 36, borderRadius: Radius.full, backgroundColor: Palette.gray100, justifyContent: 'center', alignItems: 'center' },
-  backText:         { fontSize: Typography.md, color: Palette.gray600 },
+  backBtn:          { width: 36, height: 36, borderRadius: Radius.full, borderWidth: 1.5, borderColor: Palette.gray300, backgroundColor: Palette.gray100, justifyContent: 'center', alignItems: 'center' },
+  backText:         { fontSize: Typography.md, color: Palette.gray500 },
   title:            { fontSize: Typography.xl, fontWeight: Typography.bold, color: Palette.gray900 },
   preview:          { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, borderRadius: Radius.lg, padding: Spacing.lg, marginBottom: Spacing.xl, borderWidth: 1.5 },
   previewIcon:      { fontSize: 36 },
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   colorDotActive:   { borderWidth: 3, borderColor: Palette.gray400 },
   colorCheck:       { color: Palette.white, fontSize: Typography.sm, fontWeight: Typography.bold },
   moreIconsBtn:     { backgroundColor: Palette.gray100, borderColor: Palette.gray300 },
-  moreIconsText:    { fontSize: Typography.xl, color: Palette.gray500, fontWeight: Typography.bold },
+  moreIconsText:    { fontSize: Typography.xxxl, color: Palette.gray400 },
   iconButton:       { width: 48, height: 48, borderRadius: Radius.md, justifyContent: 'center', alignItems: 'center', backgroundColor: Palette.gray100, borderWidth: 1.5, borderColor: 'transparent' },
   iconText:         { fontSize: 24 },
   button:           { borderRadius: Radius.lg, padding: Spacing.lg, alignItems: 'center', marginTop: Spacing.xl },
@@ -274,5 +274,5 @@ const styles = StyleSheet.create({
   cancelButton:     { alignItems: 'center', padding: Spacing.lg, marginBottom: Spacing.md },
   cancelText:       { color: Palette.gray400, fontSize: Typography.base },
   moreColorsBtn:    { backgroundColor: Palette.gray100, borderWidth: 1.5, borderColor: Palette.gray300 },
-  moreColorsText:   { fontSize: Typography.xl, color: Palette.gray500, fontWeight: Typography.bold },
+  moreColorsText:   { fontSize: Typography.xl, color: Palette.gray400, fontWeight: Typography.bold },
 });

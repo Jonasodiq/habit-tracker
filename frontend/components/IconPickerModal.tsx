@@ -58,6 +58,6 @@ const styles = StyleSheet.create({
   modalTitle:   { fontSize: Typography.xl, fontWeight: Typography.bold, color: Palette.gray900 },
   modalClose:   { fontSize: Typography.xl, color: Palette.gray500, padding: Spacing.xs },
   modalGrid:    { padding: Spacing.lg },
-  modalIconBtn: { width: 44, height: 44, margin: 4, borderRadius: Radius.md, justifyContent: 'center', alignItems: 'center', backgroundColor: Palette.gray50 },
-  modalIconText:{ fontSize: 26 },
+  modalIconBtn: { width: 44, height: 44, margin: 4, borderRadius: Radius.md, justifyContent: 'center', alignItems: 'center', backgroundColor: Palette.gray100 },
+  modalIconText:{ fontSize: 28 },
 });

@@ -1,50 +1,286 @@
-# Welcome to your Expo app 👋
+# 📱 HabitTracker
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+En mobilapplikation för att spåra och analysera dagliga vanor, byggd med React Native och AWS serverless-arkitektur.
 
-## Get started
+> **Examensarbete** — Folkuniversitetet, 2026
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## 📸 Screenshots
 
-2. Start the app
+> *(Lägg till skärmdumpar här)*
 
-   ```bash
-   npx expo start
-   ```
+| Vanor | Statistik | AI-insikter | Profil |
+|-------|-----------|-------------|--------|
+| ![Vanor](docs/screenshots/habits.png) | ![Stats](#) | ![AI](#) | ![Profil](#) |
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## ✨ Funktioner
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### MVP (Implementerat)
+- ✅ **Konto & Inloggning** — Registrering och inloggning via AWS Cognito
+- ✅ **Skapa & Redigera vanor** — Med ikon, färg och frekvens (dagligen/veckovis/månadsvis)
+- ✅ **Markera genomförda** — Toggle med animation och streak-räknare
+- ✅ **Statistik** — Streaks, completion rate, bar chart, kalendervy
+- ✅ **AI-insikter** — Personliga insikter genererade av Claude AI
+- ✅ **Tips för svagaste vana** — AI-genererade förbättringstips
+- ✅ **Profil** — Redigera namn, se medlemsinfo
 
-## Get a fresh project
+### Extra funktioner
+- 🎨 Modernt färgschema med Cyan/Blå tema
+- 📅 Kalendervy med progress-ringar per dag
+- 🔥 Streak-tracking per vana
+- 💡 Detaljvy per vana (30 dagars data)
+- 🌍 Svensk kalender
+- ⚡ Global state med 30 sekunders cache
+- 🤖 Claude AI via AWS Lambda (inte direkt från frontend)
+- 🔒 Säker API-nyckelhantering via miljövariabler
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
+## 🏗️ Arkitektur
+
+```
+┌─────────────────────────────────┐
+│     React Native (Expo)         │
+│     Expo Router v6              │
+└────────────────┬────────────────┘
+                 │ HTTPS / REST
+┌────────────────▼────────────────┐
+│     API Gateway (REST)          │
+│     Cognito Authorizer          │
+└────────────────┬────────────────┘
+                 │
+┌────────────────▼────────────────┐
+│     AWS Lambda (Node.js 18)     │
+│     Serverless Framework 4      │
+└────────────────┬────────────────┘
+                 │
+        ┌────────┴────────┐
+        │                 │
+┌───────▼──────┐  ┌───────▼──────┐
+│  DynamoDB    │  │  Claude API  │
+│  (4 tabeller)│  │  (Anthropic) │
+└──────────────┘  └──────────────┘
+        │
+┌───────▼──────┐
+│  AWS Cognito │
+│  User Pool   │
+└──────────────┘
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## 🛠️ Tech Stack
 
-To learn more about developing your project with Expo, look at the following resources:
+### Frontend
+| Teknologi | Version | Syfte |
+|-----------|---------|-------|
+| React Native | 0.81.5 | Mobilramverk |
+| Expo | 54.0.33 | Build & tooling |
+| Expo Router | 6.x | Filbaserad routing |
+| TypeScript | 5.9 | Typsäkerhet |
+| Axios | 1.x | HTTP-klient |
+| react-native-calendars | 1.x | Kalenderkomponent |
+| react-native-progress | latest | Progress bar |
+| react-native-svg | latest | SVG-grafik |
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Backend
+| Teknologi | Version | Syfte |
+|-----------|---------|-------|
+| AWS Lambda | Node.js 18 | Serverless functions |
+| API Gateway | REST | API-hantering |
+| DynamoDB | — | NoSQL-databas |
+| AWS Cognito | — | Autentisering |
+| Serverless Framework | 4 | IaC & deployment |
+| Claude API | Sonnet 4 | AI-insikter |
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## 📁 Projektstruktur
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```
+habit-tracker/
+├── frontend/                    # React Native app
+│   ├── app/
+│   │   ├── (auth)/             # Login & Register
+│   │   │   ├── login.tsx
+│   │   │   └── register.tsx
+│   │   ├── (tabs)/             # Tab-navigering
+│   │   │   ├── _layout.tsx
+│   │   │   ├── habits.tsx      # Huvudskärm
+│   │   │   ├── stats.tsx       # Statistik
+│   │   │   ├── insights.tsx    # AI-insikter
+│   │   │   ├── habit-form.tsx  # Skapa/redigera
+│   │   │   └── profile.tsx     # Profil
+│   │   └── _layout.tsx
+│   ├── components/
+│   │   ├── HabitList.tsx
+│   │   ├── HabitCalendar.tsx
+│   │   ├── HabitDetailModal.tsx
+│   │   ├── InsightCards.tsx
+│   │   ├── IconPickerModal.tsx
+│   │   └── ColorPickerModal.tsx
+│   ├── constants/
+│   │   ├── theme.ts            # Färger, typografi, spacing
+│   │   └── icons.ts            # Emoji-ikoner
+│   └── src/
+│       ├── contexts/
+│       │   ├── AuthContext.tsx
+│       │   └── HabitsContext.tsx
+│       └── services/
+│           ├── apiClient.ts
+│           ├── authService.ts
+│           ├── habitService.ts
+│           ├── completionService.ts
+│           ├── statisticsService.ts
+│           └── insightsService.ts
+│
+└── backend/                     # AWS Lambda
+    ├── functions/
+    │   ├── auth/               # Registrering & login
+    │   ├── habits/             # CRUD vanor
+    │   ├── tracking/           # Completions
+    │   ├── statistics/         # Statistik
+    │   └── insights/           # AI-insikter
+    ├── lib/
+    │   ├── dynamodb.js
+    │   ├── response.js
+    │   ├── calculateStreak.js
+    │   └── analyzePatterns.js
+    ├── docs/
+    │   ├── api-documentation.md
+    │   └── deployment-guide.md
+    └── serverless.yml
+```
+
+---
+
+## 🚀 Kom igång
+
+### Förutsättningar
+- Node.js 18+
+- Expo Go-appen (iOS/Android)
+- AWS-konto (för backend)
+
+### 1. Klona projektet
+```bash
+git clone https://github.com/Jonasodiq/habit-tracker.git
+cd habit-tracker
+```
+
+### 2. Backend
+```bash
+cd backend
+npm install
+
+# Skapa .env
+cp .env.example .env
+# Fyll i COGNITO_USER_POOL_ID, COGNITO_CLIENT_ID, ANTHROPIC_API_KEY
+
+# Deploya till AWS
+serverless deploy
+```
+
+### 3. Frontend
+```bash
+cd frontend
+npm install
+
+# Skapa .env
+cp .env.example .env
+# Fyll i EXPO_PUBLIC_COGNITO_USER_POOL_ID, etc.
+
+# Starta
+npx expo start
+```
+
+### 4. Scanna QR-kod med Expo Go-appen
+
+---
+
+## 🔑 Miljövariabler
+
+### Backend (`backend/.env`)
+```
+COGNITO_USER_POOL_ID=eu-north-1_XXXXXXXX
+COGNITO_CLIENT_ID=XXXXXXXXXXXXXXXXXXXXXXXX
+ANTHROPIC_API_KEY=sk-ant-XXXXXXXX
+```
+
+### Frontend (`frontend/.env`)
+```
+EXPO_PUBLIC_COGNITO_USER_POOL_ID=eu-north-1_XXXXXXXX
+EXPO_PUBLIC_COGNITO_CLIENT_ID=XXXXXXXXXXXXXXXXXXXXXXXX
+EXPO_PUBLIC_API_BASE_URL=https://XXXXXXXX.execute-api.eu-north-1.amazonaws.com/dev
+```
+
+---
+
+## 📊 API Endpoints
+
+| Method | Endpoint | Beskrivning |
+|--------|----------|-------------|
+| POST | /auth/users | Registrera |
+| POST | /auth/login | Logga in |
+| GET | /auth/users/me | Hämta profil |
+| PATCH | /auth/users/me | Uppdatera profil |
+| GET | /habits | Hämta vanor |
+| POST | /habits | Skapa vana |
+| PATCH | /habits/{id} | Uppdatera vana |
+| DELETE | /habits/{id} | Ta bort vana |
+| GET | /completions | Hämta completions |
+| POST | /completions | Markera klar |
+| DELETE | /completions/{id} | Avmarkera |
+| GET | /statistics | Hämta statistik |
+| GET | /insights | AI-insikter |
+| POST | /insights/tips | Tips för vana |
+
+Se [API Documentation](backend/docs/api-documentation.md) för detaljer.
+
+---
+
+## 🧪 Testning
+
+```bash
+# Backend — API-testning via Postman
+# Importera: backend/postman_collection.json
+
+# Frontend — Kör på enhet/simulator
+npx expo start --ios
+npx expo start --android
+```
+
+---
+
+## 📈 Roadmap
+
+- [ ] Push-notifikationer (påminnelser)
+- [ ] Kategorier för vanor
+- [ ] Dela vanor med vänner
+- [ ] Avancerade ML-insikter
+- [ ] Dark mode
+- [ ] App Store / Google Play publicering
+
+---
+
+## 👨‍💻 Utvecklad av
+
+**Jonas**  
+Examensarbete — 2026
+
+---
+
+## 📄 Licens
+
+MIT License — se [LICENSE](LICENSE) för detaljer.
+
+---
+
+## 🙏 Credits
+
+- [Expo](https://expo.dev) — React Native tooling
+- [Serverless Framework](https://serverless.com) — AWS deployment
+- [Anthropic Claude](https://anthropic.com) — AI-insikter
+- [react-native-calendars](https://github.com/wix/react-native-calendars) — Kalenderkomponent
