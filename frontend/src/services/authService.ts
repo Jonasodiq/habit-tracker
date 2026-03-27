@@ -24,33 +24,33 @@ export interface AuthResult {
   refreshToken: string;
 }
 
-// Registrera ny användare — skapar konto i Cognito + DynamoDB
+// Register new user — creates account in Cognito + DynamoDB
 export async function register(email: string, password: string, name: string): Promise<AuthResult> {
   const { data } = await axios.post(`${BASE_URL}/auth/users`, { email, password, name });
   await saveTokens(data);
   return data;
 }
 
-// Logga in med email + lösenord.
+// Log in with email + password
 export async function login(email: string, password: string): Promise<AuthResult> {
   const { data } = await axios.post(`${BASE_URL}/auth/login`, { email, password });
-  // login-svaret har inte user — hämta från storage eller bygg minimalt objekt
+  // login response does not have user — fetch from storage or build minimal object
   await saveTokens(data);
   return data;
 }
 
-// Logga ut — rensa all lagrad data.
+// Log out — clear all stored data
 export async function logout(): Promise<void> {
   await AsyncStorage.clear();
 }
 
-// Hämta inloggad användare från storage.
+// Get logged in user from storage
 export async function getStoredUser(): Promise<User | null> {
   const json = await AsyncStorage.getItem(KEYS.user);
   return json ? JSON.parse(json) : null;
 }
 
-// Kontrollera om användaren är inloggad.
+// Check if the user is logged in
 export async function isLoggedIn(): Promise<boolean> {
   const token = await AsyncStorage.getItem(KEYS.idToken);
   return !!token;

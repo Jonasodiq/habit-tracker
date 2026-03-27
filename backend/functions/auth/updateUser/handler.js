@@ -19,7 +19,7 @@ module.exports.updateUser = async (event) => {
       return response.badRequest('name krävs');
     }
 
-    // Kontrollera att användaren finns
+    // Check that the user exists
     const existing = await dynamo.send(
       new GetCommand({ TableName: TABLE, Key: { userId } })
     );
@@ -28,7 +28,7 @@ module.exports.updateUser = async (event) => {
       return response.notFound('Användaren hittades inte');
     }
 
-    // Uppdatera Cognito
+    // Update Cognito
     await cognito.send(
       new AdminUpdateUserAttributesCommand({
         UserPoolId: USER_POOL_ID,
@@ -39,7 +39,7 @@ module.exports.updateUser = async (event) => {
       })
     );
 
-    // Uppdatera DynamoDB
+    // Update DynamoDB
     const result = await dynamo.send(
       new UpdateCommand({
         TableName: TABLE,

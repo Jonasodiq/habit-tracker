@@ -128,7 +128,7 @@ export default function InsightsScreen() {
             <ActivityIndicator size="large" color={Palette.primary} style={{ marginTop: 32 }} />          
           ) : (
             <>
-              {/* AI-insikter */}
+              {/* AI insights */}
               {insightsData && (
                 <>
                   <InsightCards
@@ -153,7 +153,7 @@ export default function InsightsScreen() {
                 </>
               )}
 
-              {/* Svagaste vana */}
+              {/* Weakest habit */}
               {weakestHabit && (
                 <View style={[styles.weakCard, Shadows.sm]}>
                   <Text style={styles.weakTitle}>💡 Förbättra din svagaste vana</Text>
@@ -228,7 +228,7 @@ export default function InsightsScreen() {
                   </View>
                 </View>
 
-                {/* OK knapp */}
+                {/* OK button */}
                 <TouchableOpacity
                   style={styles.okBtn}
                   onPress={() => setModalVisible(false)}

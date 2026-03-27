@@ -2,20 +2,24 @@
 
 ## GET /insights
 
-Genererar personliga insikter baserat på användarens vanor och completions.
+Generates personalized insights based on the user's habits and completions.
 
 ### Headers
+
+```
 Authorization: Bearer <idToken>
+```
 
 ### Response
+
 ```json
 {
   "insights": [
     {
       "id": "insight_1",
       "type": "struggling | comeback | perfect_week | consistency | improvement | best_streak | best_day | most_completed",
-      "message": "Personligt meddelande på svenska",
-      "habitId": "uuid eller null",
+      "message": "Personalized message (localized, e.g. Swedish)",
+      "habitId": "uuid or null",
       "value": 17,
       "priority": 1
     }
@@ -26,16 +30,26 @@ Authorization: Bearer <idToken>
 }
 ```
 
-### Insiktstyper
-| Type | Beskrivning | Tröskel |
-|------|-------------|---------|
-| struggling | Vana under 30% completion | 7 dagars data |
-| comeback | Streak bruten men återupptagen | 2+ completions |
-| perfect_week | Alla vanor klara 7 dagar | 7 dagars data |
-| consistency | Snitt >80% senaste 14 dagar | 14 dagars data |
-| improvement | +20% vs förra veckan | 14 dagars data |
-| best_streak | Högst aktiv streak (min 3) | 3+ dagar |
-| best_day | Bästa veckodag | 14 dagars data |
-| most_completed | Flest totala completions | 5+ completions |
+---
 
-### Max 3 insikter returneras, sorterade efter prioritet.
+## Insight Types
+
+| Type           | Description                     | Threshold       |
+| -------------- | ------------------------------- | --------------- |
+| struggling     | Habit below 30% completion rate | 7 days of data  |
+| comeback       | Streak broken but resumed       | 2+ completions  |
+| perfect_week   | All habits completed for 7 days | 7 days of data  |
+| consistency    | Average >80% over last 14 days  | 14 days of data |
+| improvement    | +20% vs previous week           | 14 days of data |
+| best_streak    | Highest active streak (min 3)   | 3+ days         |
+| best_day       | Best weekday performance        | 14 days of data |
+| most_completed | Most total completions          | 5+ completions  |
+
+---
+
+## Notes
+
+* Maximum of **3 insights** are returned
+* Insights are sorted by **priority** (ascending, where 1 = highest priority)
+* `habitId` is `null` for global insights
+* Messages are intended to be user-facing and localized

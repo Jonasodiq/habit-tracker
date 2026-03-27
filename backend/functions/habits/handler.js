@@ -1,6 +1,7 @@
 const { calculateStreak } = require('../../lib/calculateStreak');
 const { QueryCommand: CompletionQueryCommand } = require('../../lib/dynamodb');
-const { randomUUID } = require('crypto');
+const { randomUUID } = require('crypto'); // Källa: https://nodejs.org/api/crypto.html#cryptorandomuuidoptions
+Argument: "Inbyggd modul kräver inget extra npm-paket och är säkrare än Math.random()-baserade ID:n som kan kollidera"
 const {
   dynamo,
   PutCommand,
@@ -19,6 +20,7 @@ const USER_INDEX = 'UserIdIndex';
 module.exports.createHabit = async (event) => {
   try {
     const userId = event.requestContext.authorizer.claims.sub;
+    // Källa: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html
     const body = JSON.parse(event.body || '{}');
     const { name, description, color, icon, frequency } = body;
 
@@ -52,21 +54,22 @@ module.exports.getHabits = async (event) => {
   try {
     const userId = event.requestContext.authorizer.claims.sub;
 
-    // 1. Hämta alla vanor
+    // 1. Get all habits
     const habitsResult = await dynamo.send(
       new QueryCommand({
         TableName: TABLE,
         IndexName: USER_INDEX,
         KeyConditionExpression: 'userId = :uid',
         ExpressionAttributeValues: { ':uid': userId },
-        ScanIndexForward: false,
+        ScanIndexForward: false, // sorts newest-first
       }),
     );
 
     const habits = habitsResult.Items || [];
 
-    // 2. Beräkna streak för varje vana parallellt
-    const habitsWithStreak = await Promise.all(
+    // 2. Calculate streak for each habit in parallel
+    const habitsWithStreak = await Promise.all( 
+      // Källa: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
       habits.map(async (habit) => {
         const completions = await dynamo.send(
           new CompletionQueryCommand({
@@ -168,7 +171,7 @@ module.exports.deleteHabit = async (event) => {
       return response.badRequest('habitId krävs');
     }
 
-    // 1. Kontrollera att vanan finns och ägs av användaren
+    // 1. Verify that the habit exists and is owned by the user
     const existing = await dynamo.send(
       new GetCommand({
         TableName: TABLE,
@@ -184,7 +187,7 @@ module.exports.deleteHabit = async (event) => {
       return response.badRequest('Du äger inte denna vana');
     }
 
-    // 2. Hämta alla relaterade completions
+    // 2. Get all related completions
     const completions = await dynamo.send(
       new QueryCommand({
         TableName: process.env.COMPLETIONS_TABLE,
@@ -194,7 +197,7 @@ module.exports.deleteHabit = async (event) => {
       }),
     );
 
-    // 3. Radera alla completions
+    // 3. Delete all completions
     if (completions.Items && completions.Items.length > 0) {
       await Promise.all(
         completions.Items.map((item) =>
@@ -208,7 +211,7 @@ module.exports.deleteHabit = async (event) => {
       );
     }
 
-    // 4. Radera vanan
+    // 4. Delete the habit
     await dynamo.send(
       new DeleteCommand({
         TableName: TABLE,

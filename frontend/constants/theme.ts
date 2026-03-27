@@ -5,27 +5,27 @@
 
 import { Platform } from 'react-native';
 
-// ─── Primärfärger: Blå/Cyan gradient-känsla ─────
+// Primary colors: Blue/Cyan gradient feel
 export const Palette = {
-  // Primär — Blå/Cyan
+  // Primary — Blue/Cyan
   primary:        '#2BBFFF',
   primaryDark:    '#0099DD',
   primaryLight:   '#E0F7FF',
 
-  // Sekundär — Lila accent
+  // Secondary — Purple accent
   secondary:      '#7C6FFF',
   secondaryLight: '#EEECFF',
 
-  // Framgång — Grön mint
+  // Success — Green mint
   success:        '#00C896',
   successLight:   '#D4F7EE',
   successDark:    '#11a800',
 
-  // Varning — Amber
+  // Warning — Amber
   warning:        '#FFB830',
   warningLight:   '#FFF4D6',
 
-  // Fara — Korall
+  // Danger — Coral
   danger:         '#FF5C7C',
   dangerLight:    '#FFE4EB',
 
@@ -33,11 +33,11 @@ export const Palette = {
   streak:         '#FF8C42',
   streakLight:    '#FFE8D6',
 
-  // Tips - Gul
+  // Tips - Yellow
   tips:         '#EBD83D',
   tipsLight:    '#FFFDE5',
 
-  // Neutrala
+  // Neutral
   white:   '#FFFFFF',
   gray50:  '#F8FAFC',
   gray100: '#F1F5F9',
@@ -49,7 +49,7 @@ export const Palette = {
   gray900: '#0F172A',
 };
 
-// ─── Temafärger ─────────────────────────────────
+// Theme colors
 export const Colors = {   
   light: {
     text:            Palette.gray900,
@@ -75,7 +75,7 @@ export const Colors = {
   },
 };
 
-// ─── Typografi ──────────────────────────────────
+// Typography
 export const Typography = {
   xs:      11,
   sm:      13,
@@ -94,7 +94,7 @@ export const Typography = {
   extrabold: '800' as const,
 };
 
-// ─── Spacing ────────────────────────────────────
+// Spacing
 export const Spacing = {
   xs:   4,
   sm:   8,
@@ -106,7 +106,7 @@ export const Spacing = {
   xxxxl: 64,
 };
 
-// ─── Border radius — rund och mjuk ──────────────
+// Border radius — round and soft
 export const Radius = {
   xs:   6,
   sm:   10,
@@ -116,7 +116,7 @@ export const Radius = {
   full: 999,
 };
 
-// ─── Shadows ────────────────────────────────────
+// Shadows
 export const Shadows = {
   sm: {
     shadowColor: '#000',
@@ -155,7 +155,7 @@ export const Shadows = {
   },
 };
 
-// ─── Fonts ──────────────────────────────────────
+// Fonts 
 export const Fonts = Platform.select({
   ios: {
     sans:    'system-ui',
@@ -177,7 +177,7 @@ export const Fonts = Platform.select({
   },
 });
 
-// ─── Habit färger ───────────────────────────────
+// Habit colors
 export const COLORS_DEFAULT = [
   '#2BBFFF', '#7C6FFF', '#00C896', '#FF5C7C',
   '#FFB830', '#FF8C42', '#45B7D1', '#DDA0DD',

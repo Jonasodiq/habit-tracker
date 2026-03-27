@@ -1,43 +1,45 @@
-# DynamoDB Database Schema - Habit Tracker
+# DynamoDB Database Schema — Habit Tracker
 
-## Översikt
+## Overview
 
-Vi kommer skapa 3 tabeller:
-1. **Users** - Användarinformation (komplement till Cognito)
-2. **Habits** - Användarnas vanor
-3. **HabitCompletions** - Logg över när vanor är genomförda
+Create 3 tables:
 
-## Varför DynamoDB?
+1. **Users** — User information (complements Cognito)
+2. **Habits** — User-defined habits
+3. **HabitCompletions** — Log of completed habits
 
-- Serverless (passar perfekt med Lambda)
-- Skalbar automatiskt
-- Pay-per-use (billigt för små projekt)
-- Snabb (låg latency)
-- Fungerar perfekt med AWS ekosystemet
+## Why DynamoDB?
+
+* Serverless (fits perfectly with Lambda)
+* Automatically scalable
+* Pay-per-use (cost-efficient for small projects)
+* Low latency (fast)
+* Seamless integration with the AWS ecosystem
 
 ---
 
-## TABELL 1: Users
+## TABLE 1: Users
 
-**Syfte:** Lagra användardata (komplement till Cognito som bara hanterar autentisering)
+**Purpose:** Store user data (Cognito only handles authentication)
 
 ### Schema:
 
-| Attribut | Typ | Beskrivning | Exempel |
-|----------|-----|-------------|---------|
-| **userId** (PK) | String | Cognito User Sub (unique ID) | `"abc123-def456-ghi789"` |
-| email | String | Användarens email | `"user@example.com"` |
-| name | String | Användarens namn | `"Anna Andersson"` |
-| createdAt | String (ISO) | När användare registrerades | `"2024-02-27T10:30:00Z"` |
-| updatedAt | String (ISO) | Senast uppdaterad | `"2024-02-27T10:30:00Z"` |
-| preferences | Map | Användarinställningar | `{theme: "dark", notifications: true}` |
+| Attribute       | Type         | Description                  | Example                                |
+| --------------- | ------------ | ---------------------------- | -------------------------------------- |
+| **userId** (PK) | String       | Cognito User Sub (unique ID) | `"abc123-def456-ghi789"`               |
+| email           | String       | User email                   | `"user@example.com"`                   |
+| name            | String       | User name                    | `"Anna Andersson"`                     |
+| createdAt       | String (ISO) | Registration timestamp       | `"2024-02-27T10:30:00Z"`               |
+| updatedAt       | String (ISO) | Last updated                 | `"2024-02-27T10:30:00Z"`               |
+| preferences     | Map          | User settings                | `{theme: "dark", notifications: true}` |
 
-### Primärnyckel:
-- **Partition Key (PK):** `userId`
+### Primary Key:
 
-### Användning:
+* **Partition Key (PK):** `userId`
+
+### Example:
+
 ```javascript
-// Skapa användare
 {
   userId: "abc123-def456",
   email: "user@example.com",
@@ -50,47 +52,50 @@ Vi kommer skapa 3 tabeller:
   }
 }
 ```
+
 ---
 
-## TABELL 2: Habits
+## TABLE 2: Habits
 
-**Syfte:** Lagra alla vanor som användare skapar
+**Purpose:** Store all habits created by users
 
 ### Schema:
 
-| Attribut | Typ | Beskrivning | Exempel |
-|----------|-----|-------------|---------|
-| **habitId** (PK) | String | Unik ID för vanan (UUID) | `"habit-uuid-12345"` |
-| **userId** (SK/GSI) | String | Vem som äger vanan | `"abc123-def456"` |
-| name | String | Namn på vanan | `"Träna"` |
-| description | String | Beskrivning | `"30 min cardio"` |
-| frequency | String | Hur ofta (daily, weekly, etc) | `"daily"` |
-| targetDays | List | Vilka dagar (om weekly) | `["monday", "wednesday", "friday"]` |
-| color | String | Färgkod för UI | `"#FF6B6B"` |
-| icon | String | Ikon-namn | `"fitness"` |
-| category | String | Kategori | `"health"` |
-| reminderTime | String | Påminnelsetid (optional) | `"08:00"` |
-| createdAt | String (ISO) | När vanan skapades | `"2024-02-27T10:30:00Z"` |
-| updatedAt | String (ISO) | Senast uppdaterad | `"2024-02-27T10:30:00Z"` |
-| isActive | Boolean | Om vanan är aktiv | `true` |
+| Attribute        | Type         | Description                     | Example                             |
+| ---------------- | ------------ | ------------------------------- | ----------------------------------- |
+| **habitId** (PK) | String       | Unique habit ID (UUID)          | `"habit-uuid-12345"`                |
+| **userId** (GSI) | String       | Owner of the habit              | `"abc123-def456"`                   |
+| name             | String       | Habit name                      | `"Exercise"`                        |
+| description      | String       | Description                     | `"30 min cardio"`                   |
+| frequency        | String       | Frequency (daily, weekly, etc.) | `"daily"`                           |
+| targetDays       | List         | Days (if weekly)                | `["monday", "wednesday", "friday"]` |
+| color            | String       | UI color                        | `"#FF6B6B"`                         |
+| icon             | String       | Icon name                       | `"fitness"`                         |
+| category         | String       | Category                        | `"health"`                          |
+| reminderTime     | String       | Reminder time (optional)        | `"08:00"`                           |
+| createdAt        | String (ISO) | Created timestamp               | `"2024-02-27T10:30:00Z"`            |
+| updatedAt        | String (ISO) | Last updated                    | `"2024-02-27T10:30:00Z"`            |
+| isActive         | Boolean      | Active status                   | `true`                              |
 
-### Primärnyckel:
-- **Partition Key (PK):** `habitId`
+### Primary Key:
+
+* **Partition Key (PK):** `habitId`
 
 ### Global Secondary Index (GSI):
-- **GSI Name:** `UserIdIndex`
-- **Partition Key:** `userId`
-- **Sort Key:** `createdAt`
-- **Syfte:** Hämta alla vanor för en specifik användare
 
-### Användning:
+* **Name:** `UserIdIndex`
+* **Partition Key:** `userId`
+* **Sort Key:** `createdAt`
+* **Purpose:** Fetch all habits for a specific user
+
+### Example:
+
 ```javascript
-// Skapa vana
 {
   habitId: "habit-uuid-12345",
   userId: "abc123-def456",
-  name: "Morgonjogg",
-  description: "Springa 5km",
+  name: "Morning Run",
+  description: "Run 5km",
   frequency: "daily",
   targetDays: [],
   color: "#4ECDC4",
@@ -101,149 +106,148 @@ Vi kommer skapa 3 tabeller:
   updatedAt: "2024-02-27T10:30:00Z",
   isActive: true
 }
-
-// Query: Hämta alla vanor för en användare
-// GSI: UserIdIndex
-// Key: userId = "abc123-def456"
 ```
+
 ---
 
-## TABELL 3: HabitCompletions
+## TABLE 3: HabitCompletions
 
-**Syfte:** Logga när användare genomför sina vanor (för statistik!)
+**Purpose:** Track when users complete habits (for analytics)
 
 ### Schema:
 
-| Attribut | Typ | Beskrivning | Exempel |
-|----------|-----|-------------|---------|
-| **completionId** (PK) | String | Unik ID (UUID) | `"comp-uuid-67890"` |
-| **habitId** (GSI1) | String | Vilken vana | `"habit-uuid-12345"` |
-| **userId** (GSI2) | String | Vem som genomförde | `"abc123-def456"` |
-| completedDate | String | Datum (YYYY-MM-DD) | `"2024-02-27"` |
-| completedAt | String (ISO) | Exakt tidpunkt | `"2024-02-27T18:45:00Z"` |
-| notes | String | Anteckningar (optional) | `"Kändes bra!"` |
-| mood | String | Humör efter (optional) | `"happy"` |
+| Attribute             | Type         | Description       | Example                  |
+| --------------------- | ------------ | ----------------- | ------------------------ |
+| **completionId** (PK) | String       | Unique ID (UUID)  | `"comp-uuid-67890"`      |
+| **habitId** (GSI1)    | String       | Related habit     | `"habit-uuid-12345"`     |
+| **userId** (GSI2)     | String       | User ID           | `"abc123-def456"`        |
+| completedDate         | String       | Date (YYYY-MM-DD) | `"2024-02-27"`           |
+| completedAt           | String (ISO) | Exact timestamp   | `"2024-02-27T18:45:00Z"` |
+| notes                 | String       | Notes (optional)  | `"Felt great!"`          |
+| mood                  | String       | Mood (optional)   | `"happy"`                |
 
-### Primärnyckel:
-- **Partition Key (PK):** `completionId`
+### Primary Key:
 
-### Global Secondary Index 1 (GSI1):
-- **GSI Name:** `HabitIdDateIndex`
-- **Partition Key:** `habitId`
-- **Sort Key:** `completedDate`
-- **Syfte:** Hämta alla completions för en specifik vana, sorterat per datum
+* **Partition Key (PK):** `completionId`
 
-### Global Secondary Index 2 (GSI2):
-- **GSI Name:** `UserIdDateIndex`
-- **Partition Key:** `userId`
-- **Sort Key:** `completedDate`
-- **Syfte:** Hämta alla completions för en användare, sorterat per datum
+### GSI 1:
 
-### Användning:
+* **Name:** `HabitIdDateIndex`
+* **Partition Key:** `habitId`
+* **Sort Key:** `completedDate`
+* **Purpose:** Fetch completions per habit (sorted by date)
+
+### GSI 2:
+
+* **Name:** `UserIdDateIndex`
+* **Partition Key:** `userId`
+* **Sort Key:** `completedDate`
+* **Purpose:** Fetch completions per user (sorted by date)
+
+### Example:
+
 ```javascript
-// Markera vana som genomförd
 {
   completionId: "comp-uuid-67890",
   habitId: "habit-uuid-12345",
   userId: "abc123-def456",
   completedDate: "2024-02-27",
   completedAt: "2024-02-27T18:45:00Z",
-  notes: "Sprang 6km idag!",
+  notes: "Ran 6km today!",
   mood: "energized"
 }
-
-// Query 1: Hämta completions för en vana
-// GSI: HabitIdDateIndex
-// Key: habitId = "habit-uuid-12345"
-// Range: completedDate mellan startDate och endDate
-
-// Query 2: Hämta alla completions för en användare
-// GSI: UserIdDateIndex
-// Key: userId = "abc123-def456"
-// Range: completedDate mellan startDate och endDate
 ```
 
 ---
 
-## Query-exempel
+## Query Examples
 
-### 1. Hämta alla vanor för en användare:
+### Get all habits for a user
+
 ```
 Table: Habits
 GSI: UserIdIndex
-Query: userId = "abc123-def456"
+Key: userId = "abc123-def456"
 Sort: createdAt (DESC)
 ```
 
-### 2. Hämta completions för en vana (senaste 30 dagarna):
+### Get completions for a habit (last 30 days)
+
 ```
 Table: HabitCompletions
 GSI: HabitIdDateIndex
-Query: habitId = "habit-uuid-12345"
+Key: habitId = "habit-uuid-12345"
 Range: completedDate BETWEEN "2024-01-28" AND "2024-02-27"
 ```
 
-### 3. Beräkna streak för en vana:
+### Calculate streak
+
 ```
 Table: HabitCompletions
 GSI: HabitIdDateIndex
-Query: habitId = "habit-uuid-12345"
-Range: completedDate <= TODAY
+Key: habitId = "habit-uuid-12345"
 Sort: DESC
-Logic: Räkna konsekutiva dagar bakåt
+Logic: Count consecutive days backwards
 ```
 
-### 4. Statistik för användare (alla vanor):
+### User statistics
+
 ```
 Table: HabitCompletions
 GSI: UserIdDateIndex
-Query: userId = "abc123-def456"
+Key: userId = "abc123-def456"
 Range: completedDate BETWEEN startDate AND endDate
 Aggregate: COUNT per habitId
 ```
----
-
-## Kostnadsuppskattning
-
-För en MVP med få användare:
-- **Read/Write Capacity:** On-Demand (betala per request)
-- **Storage:** Första 25 GB gratis
-- **Uppskattad kostnad:** $0-5/månad för utveckling och testning
 
 ---
 
-## Säkerhet
+## Cost Estimate
 
-- Alla tabeller är privata (endast accessible via Lambda med rätt IAM roles)
-- userId valideras mot Cognito JWT token
-- Användare kan bara se/ändra sin egen data
-- Lambda functions har minimal IAM permissions (principle of least privilege)
+For an MVP:
 
----
-
-## Skalbarhet
-
-DynamoDB kan hantera:
-- Miljoner requests per sekund
-- Obegränsad storage
-- Automatisk partitionering
+* On-Demand capacity (pay per request)
+* 25 GB free tier storage
+* Estimated cost: **$0–5/month** during development
 
 ---
 
-## Anmärkningar
+## Security
 
-### Varför inte en tabell med allt?
-- DynamoDB är NoSQL - separata tabeller ger bättre query performance
-- Tydligare datamodell
-- Enklare att underhålla
+* Tables are private (only accessible via Lambda with IAM roles)
+* `userId` is validated via Cognito JWT
+* Users can only access their own data
+* Least privilege IAM principle applied
 
-### Varför String för datum istället för Number (timestamp)?
-- ISO-format är lättare att läsa och debugga
-- Fungerar bra med DynamoDB sort keys
-- Enkel att konvertera till Date-objekt i JavaScript
+---
 
-### Varför UUID för IDs?
-- Garanterat unika
-- Ingen collision risk
-- Fungerar bra i distribuerade system
-- JavaScript har `crypto.randomUUID()` built-in
+## Scalability
+
+DynamoDB supports:
+
+* Millions of requests per second
+* Virtually unlimited storage
+* Automatic partitioning
+
+---
+
+## Notes
+
+### Why not a single table?
+
+* Better query performance
+* Clearer data model
+* Easier maintenance
+
+### Why ISO strings for dates?
+
+* Human-readable
+* Works well with sort keys
+* Easy conversion in JavaScript
+
+### Why UUIDs?
+
+* Globally unique
+* No collision risk
+* Ideal for distributed systems
+* Supported via `crypto.randomUUID()`

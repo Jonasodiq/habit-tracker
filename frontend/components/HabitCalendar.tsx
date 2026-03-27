@@ -35,14 +35,14 @@ export default function HabitCalendar({ habits, completions }: Props) {
   const habitMap = new Map(habits.map((h) => [h.habitId, h]));
   const todayStr = new Date().toISOString().slice(0, 10);
 
-  // Bygg completions per dag
+  // Build completions per day
   const completionsPerDay: Record<string, string[]> = {};
   completions.forEach((c) => {
     if (!completionsPerDay[c.completedDate]) completionsPerDay[c.completedDate] = [];
     completionsPerDay[c.completedDate].push(c.habitId);
   });
 
-  // Bygg markedDates med dots (max 3)
+  // Build markedDates with dots (max 3)
   const markedDates: Record<string, any> = {};
   completions.forEach((c) => {
     const habit = habitMap.get(c.habitId);
@@ -53,7 +53,7 @@ export default function HabitCalendar({ habits, completions }: Props) {
     }
   });
 
-  // Completions för vald dag
+  // Completions for selected day
   const selectedCompletions = selectedDate
     ? completions.filter((c) => c.completedDate === selectedDate)
     : [];
@@ -83,7 +83,7 @@ export default function HabitCalendar({ habits, completions }: Props) {
             <View style={{ alignItems: 'center', width: size }}>
               <View onTouchEnd={() => setSelectedDate(date.dateString)}>
                 <Svg width={size} height={size}>
-                  {/* Bakgrundscirkel */}
+                  {/* Background circle */}
                   <Circle
                     cx={size / 2}
                     cy={size / 2}
@@ -133,7 +133,7 @@ export default function HabitCalendar({ habits, completions }: Props) {
         }}
       />
 
-      {/* Detaljer för vald dag */}
+      {/* Details for selected day */}
       {selectedDate && (
         <View style={styles.details}>
           <View style={styles.detailsHeader}>

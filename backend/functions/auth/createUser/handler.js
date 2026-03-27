@@ -25,7 +25,7 @@ module.exports.createUser = async (event) => {
       return response.badRequest('email och password krävs');
     }
 
-    // 1. Registrera i Cognito
+    // 1. Register i Cognito
     const signUpResult = await cognito.send(
       new SignUpCommand({
         ClientId: CLIENT_ID,
@@ -40,7 +40,7 @@ module.exports.createUser = async (event) => {
 
     const sub = signUpResult.UserSub;
 
-    // 2. Bekräfta 
+    // 2. Confirm 
     await cognito.send(
       new AdminConfirmSignUpCommand({
         UserPoolId: POOL_ID,
@@ -48,7 +48,7 @@ module.exports.createUser = async (event) => {
       }),
     );
 
-    // 3. Logga in och hämta token
+    // 3. Log in and get token
     const authResult = await cognito.send(
       new InitiateAuthCommand({
         AuthFlow: 'USER_PASSWORD_AUTH',
@@ -62,7 +62,7 @@ module.exports.createUser = async (event) => {
 
     const tokens = authResult.AuthenticationResult;
 
-    // 4. Spara i DynamoDB
+    // 4. Save to DynamoDB
     const user = {
       userId: sub,
       email: email,

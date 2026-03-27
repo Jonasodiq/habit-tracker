@@ -49,7 +49,6 @@ export default function LoginScreen() {
     >
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.emoji}>✅</Text>
         <Text style={styles.appName}>HabitTracker</Text>
         <Text style={styles.title}>Välkommen tillbaka!</Text>
         <Text style={styles.subtitle}>Logga in för att fortsätta din resa</Text>

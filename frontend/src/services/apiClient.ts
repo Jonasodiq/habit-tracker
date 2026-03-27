@@ -8,7 +8,7 @@ const apiClient = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Lägg till idToken automatiskt på varje anrop
+// Add idToken automatically on every call
 apiClient.interceptors.request.use(async (config) => {
   const token = await AsyncStorage.getItem('@auth:idToken');
   if (token) {

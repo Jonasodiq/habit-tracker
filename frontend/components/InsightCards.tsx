@@ -10,7 +10,7 @@ interface Props {
   fromCache: boolean;
 }
 
-// Parsar text med **bold** markdown
+// Parses text with **bold** markdown
 function parseInsightText(text: string) {
   const lines = text.split('\n').filter(line => line.trim() !== '');
   
@@ -66,14 +66,14 @@ export default function InsightCards({ aiInsight, fallbackInsights, generatedAt,
         <Text style={styles.meta}>{fromCache ? '💾 cachad' : `${dataPoints} datapunkter`}</Text>
       </View>
 
-      {/* AI insikt */}
+      {/* AI insight */}
       {aiInsight && (
         <Animated.View style={[styles.aiCard, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
           {parseInsightText(aiInsight)}
         </Animated.View>
       )}
 
-      {/* Fallback insikter */}
+      {/* Fallback insights */}
       {fallbackInsights.map((insight) => (
         <View key={insight.id} style={styles.fallbackCard}>
           <Text style={styles.fallbackText}>{insight.message}</Text>

@@ -27,7 +27,7 @@ const HabitsContext = createContext<HabitsContextType>({
   setCompletions: () => {},
 });
 
-const CACHE_TTL_MS = 30 * 1000; // 30 sekunder
+const CACHE_TTL_MS = 30 * 1000; // 30 sek
 
 export function HabitsProvider({ children }: { children: ReactNode }) {
   const [habits, setHabits]           = useState<Habit[]>([]);
@@ -41,7 +41,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
     if (!force && lastFetched && now - lastFetched < CACHE_TTL_MS) return;
 
     try {
-      // Kolla om användaren är inloggad
+      // Check if the user is logged in
       const token = await AsyncStorage.getItem('@auth:idToken');
       if (!token) return;
 
@@ -54,7 +54,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
       setCompletions(completionsData);
       setLastFetched(Date.now());
     } catch (err: any) {
-        // Ignorera 401 — användaren är inte inloggad ännu
+        // Ignore 401 — user is not logged in yet
         if (err?.response?.status !== 401) {
             console.error('HabitsContext loadAll error:', err);
         }

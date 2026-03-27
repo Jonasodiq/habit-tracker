@@ -65,7 +65,6 @@ export default function RegisterScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.emoji}>🌱</Text>
           <Text style={styles.appName}>HabitTracker</Text>
           <Text style={styles.title}>Börja din resa!</Text>
           <Text style={styles.subtitle}>Skapa ett konto och bygg bättre vanor</Text>
@@ -154,7 +153,7 @@ const styles = StyleSheet.create({
   scroll:         { flexGrow: 1, justifyContent: 'center', padding: Spacing.xl },
   header:         { alignItems: 'center', marginBottom: Spacing.xxxl },
   emoji:          { fontSize: 56, marginBottom: Spacing.sm },
-  appName:        { fontSize: Typography.sm, fontWeight: Typography.bold, color: Palette.primary, letterSpacing: 2, textTransform: 'uppercase', marginBottom: Spacing.sm },
+  appName:        { fontSize: Typography.xl, fontWeight: Typography.bold, color: Palette.primary, letterSpacing: 2, textTransform: 'uppercase', marginBottom: Spacing.sm },
   title:          { fontSize: Typography.xxxl, fontWeight: Typography.extrabold, color: Palette.gray900, marginBottom: Spacing.xs },
   subtitle:       { fontSize: Typography.base, color: Palette.gray500, textAlign: 'center' },
   form:           { gap: Spacing.md },

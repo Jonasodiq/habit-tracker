@@ -180,8 +180,6 @@ functions:
             type: COGNITO_USER_POOLS
             arn: ${self:custom.cognitoArn}
 
-plugins: []
-
 package:
   exclude:
     - node_modules/**
