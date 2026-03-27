@@ -23,15 +23,17 @@ module.exports.completeHabit = async (event) => {
       return response.badRequest('habitId krävs');
     }
 
-    const today = new Date().toISOString().slice(0, 10);
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD ISO 8601
+    // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingRulesDataTypes.html
 
     const existing = await dynamo.send(
       new QueryCommand({
         TableName: TABLE,
-        IndexName: HABIT_INDEX,
+        IndexName: HABIT_INDEX, // Källa GSI: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html
         KeyConditionExpression: 'habitId = :hid AND completedDate = :date',
         ExpressionAttributeValues: { ':hid': habitId, ':date': today },
-        Limit: 1,
+        Limit: 1, // Argument: "Limit: 1 minimerar dataöverföring och kostnad i DynamoDB, DynamoDB slutar söka direkt när den hittar ett resultat — effektivt"
+                  // Källa: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.html
       }),
     );
 
@@ -68,7 +70,7 @@ module.exports.getCompletions = async (event) => {
     let result;
 
     if (habitId) {
-      // Hämta completions för specifik vana
+      // Get completions for specific habit
       const params = {
         TableName: TABLE,
         IndexName: HABIT_INDEX,
@@ -83,7 +85,7 @@ module.exports.getCompletions = async (event) => {
       };
       result = await dynamo.send(new QueryCommand(params));
     } else {
-      // Hämta alla completions för användaren
+      // Get all completions for the user
       const params = {
         TableName: TABLE,
         IndexName: USER_INDEX,
@@ -98,6 +100,15 @@ module.exports.getCompletions = async (event) => {
       };
       result = await dynamo.send(new QueryCommand(params));
     }
+     /*
+      if (habitId) {
+        // Sök på specifik vana via HABIT_INDEX
+      } else {
+        // Sök på alla användarens completions via USER_INDEX
+      }
+        Argument: Samma endpoint hanterar två olika användningsfall beroende på om habitId skickas med eller inte.
+        Minskar antalet endpoints i API:t.
+    */
 
     return response.success({ completions: result.Items });
   } catch (err) {
@@ -127,6 +138,7 @@ module.exports.deleteCompletion = async (event) => {
       return response.notFound('Completion hittades inte');
     }
 
+    // Autentisering
     if (existing.Item.userId !== userId) {
       return response.badRequest('Du äger inte denna completion');
     }

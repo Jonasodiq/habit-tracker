@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   barValue:       { width: 36, fontSize: Typography.xs, color: Palette.gray500, textAlign: 'right' },
 
   // Streaks
-    streakRow:    { flexDirection: 'row', alignItems: 'center', padding: Spacing.md, backgroundColor: Palette.gray50, borderRadius: Radius.sm, marginBottom: Spacing.sm, borderLeftWidth: 3, gap: Spacing.md },
+  streakRow:      { flexDirection: 'row', alignItems: 'center', padding: Spacing.md, backgroundColor: Palette.gray50, borderRadius: Radius.sm, marginBottom: Spacing.sm, borderLeftWidth: 3, gap: Spacing.md },
   streakIcon:     { fontSize: Typography.xl },
   streakName:     { flex: 1, fontSize: Typography.base, fontWeight: Typography.semibold, color: Palette.gray900 },
   streakBadge:    { paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs, borderRadius: Radius.full },

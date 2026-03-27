@@ -1,46 +1,65 @@
-# Backend API — Testresultat
-Datum: 2026-03-11
-Testare: Jonas
-Miljö: AWS (eu-north-1) / dev / Postman
+# Backend API — Test Results
 
-## Sammanfattning
-- Totalt: 27 tester
-- Godkända: 27
-- Underkända: 0
+- Date: 2026-03-11
+- Tester: Jonas
+- Environment: AWS (eu-north-1) / dev / Postman
+
+---
+
+## Summary
+
+* Total tests: 27
+* Passed: 27
+* Failed: 0
+
+---
 
 ## AUTH (7/7 ✅)
-- POST /auth/users — Registrering fungerar
-- POST /auth/users — Duplicate email ger 400
-- POST /auth/login — Inloggning fungerar
-- POST /auth/login — Fel lösenord ger 401
-- GET /auth/users/me — Hämtar användare med token
-- GET /auth/users/me — Utan token ger 401
-- PATCH /auth/users/me — Uppdatering fungerar
+
+* POST /auth/users — Registration works
+* POST /auth/users — Duplicate email returns 400
+* POST /auth/login — Login works
+* POST /auth/login — Incorrect password returns 401
+* GET /auth/users/me — Retrieves user with token
+* GET /auth/users/me — Without token returns 401
+* PATCH /auth/users/me — Update works
+
+---
 
 ## HABITS (7/7 ✅)
-- POST /habits — Skapar vana korrekt
-- POST /habits — Utan name ger 400
-- GET /habits — Hämtar alla vanor
-- PATCH /habits/{id} — Uppdaterar vana
-- PATCH /habits/{id} — Fejkat ID ger 404
-- DELETE /habits/{id} — Tar bort med cascade
-- DELETE /habits/{id} — Annans habit ger 400
+
+* POST /habits — Creates habit successfully
+* POST /habits — Missing name returns 400
+* GET /habits — Retrieves all habits
+* PATCH /habits/{id} — Updates habit
+* PATCH /habits/{id} — Invalid ID returns 404
+* DELETE /habits/{id} — Deletes with cascade
+* DELETE /habits/{id} — Accessing another user's habit returns 400
+
+---
 
 ## COMPLETIONS (6/6 ✅)
-- POST /completions — Markerar vana klar
-- POST /completions — Deduplicering fungerar
-- GET /completions — Hämtar alla completions
-- GET /completions?habitId= — Filtrering fungerar
-- DELETE /completions/{id} — Tar bort completion
-- DELETE /completions/{id} — Annans completion ger 400
+
+* POST /completions — Marks habit as completed
+* POST /completions — Deduplication works
+* GET /completions — Retrieves all completions
+* GET /completions?habitId= — Filtering works
+* DELETE /completions/{id} — Deletes completion
+* DELETE /completions/{id} — Accessing another user's completion returns 400
+
+---
 
 ## STATISTICS & INSIGHTS (7/7 ✅)
-- GET /statistics — Returnerar summary + per-habit data
-- GET /insights — Claude AI genererar insikter
-- POST /insights/tips — Tips genereras för svagaste vana
-- Alla endpoints utan token ger 401
 
-## Säkerhet
-- Cognito-autentisering fungerar på alla skyddade endpoints
-- Användare kan inte modifiera andras data
-- Cascade delete fungerar korrekt
+* GET /statistics — Returns summary + per-habit data
+* GET /insights — AI generates insights
+* POST /insights/tips — Tips generated for weakest habit
+* All endpoints without token return 401
+
+---
+
+## Security
+
+* Cognito authentication works across all protected endpoints
+* Users cannot modify other users' data
+* Cascade delete works correctly

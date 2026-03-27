@@ -8,7 +8,7 @@ import {
   User,
 } from '@/src/services/authService';
 
-// --- Typer ---
+// === Types ===
 interface AuthContextType {
   user: User | null;
   loading: boolean;
@@ -18,16 +18,16 @@ interface AuthContextType {
   register: (email: string, password: string, name: string) => Promise<void>;
 }
 
-// --- Skapa context ---
+// == Create context ===
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// --- Provider ---
+// === Provider ===
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
 
-  // Kör vid app-start — ladda in sparad användare
+  // Run on app startup — load saved user
   useEffect(() => {
     async function loadUser() {
       try {
@@ -72,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// --- Hook ---
+// === Hook ===
 export function useAuth(): AuthContextType {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth måste användas inom AuthProvider');

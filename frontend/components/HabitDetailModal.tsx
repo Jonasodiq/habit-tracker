@@ -13,7 +13,7 @@ interface Props {
 export default function HabitDetailModal({ visible, habit, completions, onClose }: Props) {
   if (!habit) return null;
 
-  // Filtrera completions för denna vana (senaste 30 dagar)
+  // Filter completions for this habit (last 30 days)
   const today = new Date();
   const thirtyDaysAgo = new Date(today);
   thirtyDaysAgo.setDate(today.getDate() - 30);
@@ -23,7 +23,7 @@ export default function HabitDetailModal({ visible, habit, completions, onClose 
     return c.habitId === habit.habitId && date >= thirtyDaysAgo;
   });
 
-  // Bygg 30 dagars grid
+  // Build 30 day grid
   const days = Array.from({ length: 30 }, (_, i) => {
     const d = new Date(today);
     d.setDate(today.getDate() - (29 - i));
@@ -82,7 +82,7 @@ export default function HabitDetailModal({ visible, habit, completions, onClose 
             </View>
           </View>
 
-          {/* 30-dagars grid */}
+          {/* 30-day grid */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>📅 Senaste 30 dagarna</Text>
             <View style={styles.grid}>
@@ -115,7 +115,7 @@ export default function HabitDetailModal({ visible, habit, completions, onClose 
             </View>
           </View>
 
-          {/* Senaste genomföranden */}
+          {/* Latest implementations */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>✅ Senaste genomföranden</Text>
             {habitCompletions.length === 0 ? (

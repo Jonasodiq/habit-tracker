@@ -1,14 +1,14 @@
 /**
- * Beräknar streak baserat på completions och frekvens.
+ * Calculates streak based on completions and frequency
  *
- * @param {string[]} dates - Array av datum (YYYY-MM-DD), sorterade DESC
+ * @param {string[]} dates - Array of dates (YYYY-MM-DD), sorted DESC
  * @param {string} frequency - 'daily' | 'weekly' | 'monthly'
- * @returns {number} - Antal konsekutiva perioder i streak
+ * @returns {number} - Consecutive periods in streak
  */
 function calculateStreak(dates, frequency = 'daily') {
   if (!dates || dates.length === 0) return 0;
 
-  // Sortera datum DESC (nyast först)
+  // Sort date DESC (newest first)
   const sorted = [...new Set(dates)].sort((a, b) => (a > b ? -1 : 1));
 
   const today = new Date();
@@ -36,16 +36,15 @@ function calculateDailyStreak(sortedDates, today) {
     const diffDays = Math.round((expected - date) / (1000 * 60 * 60 * 24));
 
     if (diffDays === 0) {
-      // Genomförd på rätt dag
+      // Completed on the right day
       streak++;
       expected.setDate(expected.getDate() - 1);
     } else if (diffDays === 1 && streak === 0) {
-      // Tillåt igår som start om inte gjort idag än
+      // Allow yesterday as a start if not done today yet
       streak++;
       expected = new Date(date);
       expected.setDate(expected.getDate() - 1);
     } else {
-      // Streak bruten
       break;
     }
   }

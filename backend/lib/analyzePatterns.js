@@ -1,6 +1,6 @@
 /**
- * Analyserar beteendemönster från habits och completions.
- * Returnerar insikter sorterade efter prioritet.
+* Analyzes behavioral patterns from habits and completions.
+* Returns insights sorted by priority.
  */
 
 const WEEKDAYS = ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag'];
@@ -11,14 +11,14 @@ function analyzePatterns(habits, completions) {
   const insights = [];
   const now = new Date();
   const todayStr = now.toLocaleDateString('sv-SE'); // YYYY-MM-DD i lokal tid
-  const today = new Date(todayStr + 'T12:00:00');
+  const today = new Date(todayStr + 'T12:00:00'); // för att undvika DST-problem
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
   const yesterdayStr = yesterday.toLocaleDateString('sv-SE');
 
-  // --- Hjälpfunktioner ---
+  // ===== Help functions =====
 
-  // Completions per habit
+  // Completions for each habit
   const completionsByHabit = {};
   habits.forEach((h) => completionsByHabit[h.habitId] = []);
   completions.forEach((c) => {
@@ -27,7 +27,7 @@ function analyzePatterns(habits, completions) {
     }
   });
 
-  // Completion rate senaste N dagar per habit
+  // Completion rate last N days per habit
   function getRate(habitId, days) {
     const since = new Date(today);
     since.setDate(today.getDate() - days);
@@ -36,13 +36,12 @@ function analyzePatterns(habits, completions) {
     return count / days;
   }
 
-  // Antal dagar med data totalt
+  // Total number of days of data
   const allDates = [...new Set(completions.map((c) => c.completedDate))];
   const totalDays = allDates.length;
 
-  // ─────────────────────────────────────────────
-  // 1. struggling — Kämpar med (prioritet 1)
-  // ─────────────────────────────────────────────
+ 
+  // === 1. Struggling with ===
   if (totalDays >= 7) {
     let weakest = null;
     let weakestRate = 1;
@@ -67,15 +66,13 @@ function analyzePatterns(habits, completions) {
     }
   }
 
-  // ─────────────────────────────────────────────
-  // 2. comeback — Comeback (prioritet 2)
-  // ─────────────────────────────────────────────
+  // === 2. Comeback ===
   habits.forEach((h) => {
     const dates = completionsByHabit[h.habitId] || [];
     const doneToday     = dates.includes(todayStr);
     const doneYesterday = dates.includes(yesterdayStr);
 
-    // Genomförd idag men INTE igår → comeback
+    // Done today but NOT yesterday → comeback
     if (doneToday && !doneYesterday && dates.length >= 2) {
       insights.push({
         type: 'comeback',
@@ -87,9 +84,7 @@ function analyzePatterns(habits, completions) {
     }
   });
 
-  // ─────────────────────────────────────────────
-  // 3. perfect_week — Perfekt vecka (prioritet 3)
-  // ─────────────────────────────────────────────
+  // === 3. Perfect week ===
   if (totalDays >= 7) {
     const last7 = Array.from({ length: 7 }, (_, i) => {
       const d = new Date(today);
@@ -113,9 +108,7 @@ function analyzePatterns(habits, completions) {
     }
   }
 
-  // ─────────────────────────────────────────────
-  // 4. consistency — Konsekvent (prioritet 4)
-  // ─────────────────────────────────────────────
+  // === 4. Consistency ===
   if (totalDays >= 14) {
     const avgRate = habits.reduce((sum, h) => sum + getRate(h.habitId, 14), 0) / habits.length;
 
@@ -130,9 +123,7 @@ function analyzePatterns(habits, completions) {
     }
   }
 
-  // ─────────────────────────────────────────────
-  // 5. improvement — Förbättring (prioritet 5)
-  // ─────────────────────────────────────────────
+  // === 5. Improvement ===
   if (totalDays >= 14) {
     habits.forEach((h) => {
       const week1Start = new Date(today); week1Start.setDate(today.getDate() - 14);
@@ -159,9 +150,7 @@ function analyzePatterns(habits, completions) {
     });
   }
 
-  // ─────────────────────────────────────────────
-  // 6. best_streak — Bästa streak (prioritet 6)
-  // ─────────────────────────────────────────────
+  // === 6. Best streak ===
   let bestStreakHabit = null;
   let bestStreakValue = 0;
 
@@ -183,9 +172,7 @@ function analyzePatterns(habits, completions) {
     });
   }
 
-  // ─────────────────────────────────────────────
-  // 7. best_day — Bästa dag i veckan (prioritet 7)
-  // ─────────────────────────────────────────────
+  // === 7. Best day of the week ===
   if (totalDays >= 14) {
     const dayCount = [0, 0, 0, 0, 0, 0, 0];
     completions.forEach((c) => {
@@ -207,9 +194,7 @@ function analyzePatterns(habits, completions) {
     }
   }
 
-  // ─────────────────────────────────────────────
-  // 8. most_completed — Mest genomförd (prioritet 8)
-  // ─────────────────────────────────────────────
+  // === 8. Most completed ===
   let mostCompletedHabit = null;
   let mostCompletedCount = 0;
 
@@ -231,7 +216,7 @@ function analyzePatterns(habits, completions) {
     });
   }
 
-  // Sortera efter prioritet och returnera top 3
+  // Sort by priority and return top 3
   return insights
     .sort((a, b) => a.priority - b.priority)
     .slice(0, 3);

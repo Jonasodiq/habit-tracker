@@ -11,10 +11,9 @@ const USER_INDEX        = 'UserIdIndex';
 const HABIT_INDEX       = 'HabitIdDateIndex';
 
 const CACHE_TTL_HOURS = 24;
+Argument: " 1 API-anrop per användare per dag istället för varje sidladdning. Caching minskar kostnaden"
 
-// ─────────────────────────────────────────────
-// Hämta cache
-// ─────────────────────────────────────────────
+// === Get cache ===
 async function getCachedInsights(userId) {
   try {
     const result = await dynamo.send(
@@ -22,8 +21,8 @@ async function getCachedInsights(userId) {
     );
     if (!result.Item) return null;
 
-    const now = Math.floor(Date.now() / 1000);
-    if (result.Item.ttl < now) return null;
+    const now = Math.floor(Date.now() / 1000); // Källa Unix-time: https://en.wikipedia.org/wiki/Unix_time
+    if (result.Item.ttl < now) return null; // Källa DynamoDB TTL: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html
 
     return result.Item.insights;
   } catch (err) {
@@ -32,12 +31,10 @@ async function getCachedInsights(userId) {
   }
 }
 
-// ─────────────────────────────────────────────
-// Spara cache
-// ─────────────────────────────────────────────
+// === Save cache ===
 async function cacheInsights(userId, insights) {
   try {
-    const ttl = Math.floor(Date.now() / 1000) + CACHE_TTL_HOURS * 3600;
+    const ttl = Math.floor(Date.now() / 1000) + CACHE_TTL_HOURS * 3600; // Converts 24 hours to seconds
     await dynamo.send(
       new PutCommand({
         TableName: CACHE_TABLE,
@@ -49,44 +46,42 @@ async function cacheInsights(userId, insights) {
   }
 }
 
-// ─────────────────────────────────────────────
-// Bygg prompt för Claude
-// ─────────────────────────────────────────────
+// === Bygg prompt för Claude  === 
 function buildPrompt(habits, completions) {
   const today = new Date().toLocaleDateString('sv-SE');
   const completedToday = completions.filter((c) => c.completedDate === today).length;
 
   const streaksText = habits
     .map((h) => `- ${h.icon} ${h.name}: ${h.streak || 0} dagar i rad (${h.frequency})`)
-    .join('\n');
+    .join('\n'); // line breaks
+    // Källa: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map
 
   const totalCompletions = completions.length;
   const avgPerDay = habits.length > 0
-    ? Math.round((totalCompletions / 30) * 10) / 10
+    ? Math.round((totalCompletions / 30) * 10) / 10 // round ex. 2.3
     : 0;
 
   return `Du är en motiverande coach som hjälper människor bygga bättre vanor. Analysera följande data och ge personliga insikter på svenska.
 
-DATA:
-- Antal vanor: ${habits.length}
-- Genomförda idag: ${completedToday} av ${habits.length}
-- Totala genomföranden senaste 30 dagarna: ${totalCompletions}
-- Snitt per dag: ${avgPerDay}
+  DATA:
+  - Antal vanor: ${habits.length}
+  - Genomförda idag: ${completedToday} av ${habits.length}
+  - Totala genomföranden senaste 30 dagarna: ${totalCompletions}
+  - Snitt per dag: ${avgPerDay}
 
-VANOR OCH STREAKS:
-${streaksText}
+  VANOR OCH STREAKS:
+  ${streaksText}
 
-Ge 3 korta personliga insikter:
-1. Vad som går bra (specifik vana om möjligt)
-2. Konkret förbättringstips (nämn svagaste vanan)
-3. Motiverande avslutning
+  Ge 3 korta personliga insikter:
+  1. Vad som går bra (specifik vana om möjligt)
+  2. Konkret förbättringstips (nämn svagaste vanan)
+  3. Motiverande avslutning
 
-Skriv på svenska, var vänlig och personlig. Max 120 ord totalt. Använd emojis sparsamt.`;
-}
+  Skriv på svenska, var vänlig och personlig. Max 120 ord totalt. Använd emojis sparsamt.`;
+  }
+  // Källa prompt engineering: https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview
 
-// ─────────────────────────────────────────────
-// Anropa Claude API
-// ─────────────────────────────────────────────
+// === Call Claude API  === 
 async function callClaude(habits, completions) {
   const prompt = buildPrompt(habits, completions);
 
@@ -110,12 +105,10 @@ async function callClaude(habits, completions) {
   }
 
   const data = await res.json();
-  return data.content[0].text;
+  return data.content[0].text; // https://platform.claude.com/docs/en/api/messages
 }
 
-// ─────────────────────────────────────────────
-// GET /insights
-// ─────────────────────────────────────────────
+// === GET /insights  === 
 module.exports.getInsights = async (event) => {
   try {
     console.log('EVENT:', JSON.stringify(event));
@@ -123,13 +116,13 @@ module.exports.getInsights = async (event) => {
     
     const userId = event.requestContext.authorizer.claims.sub;
 
-    // 1. Kolla cache
+    // 1. Check cache
     const cached = await getCachedInsights(userId);
     if (cached) {
       return response.success({ ...cached, fromCache: true });
-    }
+    } // Källa spread: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax
 
-    // 2. Hämta habits
+    // 2. Get habits
     const habitsResult = await dynamo.send(
       new QueryCommand({
         TableName: HABITS_TABLE,
@@ -150,7 +143,7 @@ module.exports.getInsights = async (event) => {
       });
     }
 
-    // 3. Hämta completions (senaste 30 dagar)
+    // 3. Get completions (last 30 days)
     const today = new Date();
     const thirtyDaysAgo = new Date(today);
     thirtyDaysAgo.setDate(today.getDate() - 30);
@@ -168,7 +161,7 @@ module.exports.getInsights = async (event) => {
     );
     const completions = completionsResult.Items || [];
 
-    // 4. Beräkna streaks per vana
+    // 4. Calculate the amount for each habit
     const habitsWithStreak = await Promise.all(
       habits.map(async (habit) => {
         const result = await dynamo.send(
@@ -186,7 +179,7 @@ module.exports.getInsights = async (event) => {
       })
     );
 
-    // 5. Försök anropa Claude, fallback till analyzePatterns
+    // 5. Call Claude, fallback to analyzePatterns
     let aiInsight = null;
     let fallbackInsights = [];
     let source = 'claude';
@@ -202,7 +195,7 @@ module.exports.getInsights = async (event) => {
         message: i.message,
         value:   i.value,
       }));
-    }
+    } // Källa resilience patterns: https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/resiliency-and-the-components-of-reliability.html
 
     const result = {
       type: source,
@@ -214,7 +207,7 @@ module.exports.getInsights = async (event) => {
       fromCache: false,
     };
 
-    // 6. Cacha resultatet
+    // 6. Cacha result
     await cacheInsights(userId, result);
 
     return response.success(result);
@@ -237,14 +230,14 @@ module.exports.getHabitTips = async (event) => {
 
     const prompt = `Du är en motiverande coach. En användare kämpar med vanan "${habitIcon} ${habitName}" (${habitFrequency}).
 
-Ge 3 konkreta, praktiska tips på svenska för att förbättra denna vana.
+    Ge 3 konkreta, praktiska tips på svenska för att förbättra denna vana.
 
-Format:
-1. [Tips rubrik]: [Förklaring på 1-2 meningar]
-2. [Tips rubrik]: [Förklaring på 1-2 meningar]  
-3. [Tips rubrik]: [Förklaring på 1-2 meningar]
+    Format:
+    1. [Tips rubrik]: [Förklaring på 1-2 meningar]
+    2. [Tips rubrik]: [Förklaring på 1-2 meningar]  
+    3. [Tips rubrik]: [Förklaring på 1-2 meningar]
 
-Avsluta med en kort motiverande mening. Max 150 ord totalt.`;
+    Avsluta med en kort motiverande mening. Max 150 ord totalt.`;
 
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
