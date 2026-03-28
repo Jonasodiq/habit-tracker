@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList } from 'react-native';
-import { COLORS_DEFAULT, COLORS_MORE, Palette, Radius, Spacing, Typography } from '@/constants/theme';
+import { COLORS_MORE, Palette, Radius, Spacing, Typography } from '@/constants/theme';
 
 interface Props {
   visible: boolean;

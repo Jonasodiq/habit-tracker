@@ -1,7 +1,5 @@
 import { useState, useCallback } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, Modal,
-  ActivityIndicator, ScrollView, RefreshControl
-} from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, Modal, ActivityIndicator, ScrollView, RefreshControl } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import InsightCards from '@/components/InsightCards';
 import { getInsights, InsightsResponse } from '@/src/services/insightsService';
@@ -19,11 +17,7 @@ export default function InsightsScreen() {
   const [weakestHabit, setWeakestHabit] = useState<Habit | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      loadData();
-    }, [])
-  );
+  useFocusEffect( useCallback(() => { loadData(); }, []) );
 
   async function loadData() {
     try {

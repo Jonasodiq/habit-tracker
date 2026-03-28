@@ -13,10 +13,11 @@ interface Props {
 // Parses text with **bold** markdown
 function parseInsightText(text: string) {
   const lines = text.split('\n').filter(line => line.trim() !== '');
+  // Källa: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split
   
   return lines.map((line, lineIndex) => {
-    const parts = line.split(/\*\*(.*?)\*\*/g);
-    const hasBold = parts.some((_, i) => i % 2 === 1);
+    const parts = line.split(/\*\*(.*?)\*\*/g); // Källa regex: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions
+    const hasBold = parts.some((_, i) => i % 2 === 1); // index 0,2,4 = normal text, index 1,3,5 = bold tex
     const isFirst = lineIndex === 0;
 
     return (
@@ -24,8 +25,8 @@ function parseInsightText(text: string) {
         <Text style={styles.aiText}>
           {parts.map((part, i) =>
             i % 2 === 1
-              ? <Text key={i} style={styles.aiBold}>{part}</Text>
-              : <Text key={i}>{part}</Text>
+              ? <Text key={i} style={styles.aiBold}>{part}</Text> // bold text
+              : <Text key={i}>{part}</Text> //  normal text
           )}
         </Text>
         {hasBold && isFirst && <View style={styles.separator} />}
@@ -35,8 +36,8 @@ function parseInsightText(text: string) {
 }
 
 export default function InsightCards({ aiInsight, fallbackInsights, generatedAt, dataPoints, fromCache }: Props) {
-  const fadeAnim  = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(24)).current;
+  const fadeAnim  = useRef(new Animated.Value(0)).current; // opacity = 0
+  const slideAnim = useRef(new Animated.Value(24)).current; // Y position (24px below end position)
 
   useEffect(() => {
     Animated.parallel([
@@ -44,6 +45,7 @@ export default function InsightCards({ aiInsight, fallbackInsights, generatedAt,
       Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: true }),
     ]).start();
   }, [aiInsight]);
+  // Källa: https://reactnative.dev/docs/animations#using-the-native-driver
 
   if (!aiInsight && fallbackInsights.length === 0) {
     return (

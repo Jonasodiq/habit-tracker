@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList } from 'react-native';
-import { ICONS_DEFAULT, ICONS_MORE } from '@/constants/icons';
+import { ICONS_MORE } from '@/constants/icons';
 import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
 
 interface Props {

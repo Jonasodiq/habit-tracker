@@ -1,12 +1,4 @@
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  RefreshControl,
-  Animated,
-} from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, RefreshControl, Animated } from 'react-native';
 import { useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { Habit } from '@/src/services/habitService';

@@ -1,14 +1,7 @@
-const {
-  CognitoIdentityProviderClient,
-  InitiateAuthCommand,
-} = require('@aws-sdk/client-cognito-identity-provider');
+const { CognitoIdentityProviderClient, InitiateAuthCommand } = require('@aws-sdk/client-cognito-identity-provider');
 const response = require('../../../lib/response');
-
 const CLIENT_ID = process.env.COGNITO_CLIENT_ID;
-
-const cognito = new CognitoIdentityProviderClient({
-  region: process.env.AWS_REGION || 'eu-north-1',
-});
+const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_REGION || 'eu-north-1' });
 
 // POST /login
 module.exports.login = async (event) => {

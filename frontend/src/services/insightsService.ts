@@ -24,3 +24,16 @@ export async function getInsights(): Promise<InsightsResponse> {
   const { data } = await apiClient.get('/insights');
   return data;
 }
+
+/* Design Choices Summary
+  Choice / Tool                 | Reason / Benefit                                                        | Source / Notes
+  ------------------------------|-------------------------------------------------------------------------|-----------------------------------------
+  apiClient (Axios instance)    | Centralized API client with baseURL, headers, and JWT interceptor       | Reuse from apiClient.ts
+  Insight interface             | TypeScript type safety for individual insight objects                   | Ensures consistent handling in components
+  InsightsResponse interface    | Encapsulates full API response: AI insight, fallback insights, metadata | Avoids ad-hoc object handling in UI
+  getInsights()                 | Encapsulates GET /insights endpoint, returns typed InsightsResponse     | Components don’t handle HTTP logic
+  fromCache field               | Indicates if response was served from cache                             | Useful for caching logic in UI
+  Optional message field        | Provides error/info messages from API                                   | Makes error handling consistent
+  Promise-based async/await     | Handles async API calls cleanly; allows try/catch in consuming code     | Standard JS async pattern
+  Return consistent data object | Components can directly consume data without transformation             | Simplifies UI logic
+*/

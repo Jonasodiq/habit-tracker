@@ -1,15 +1,8 @@
 const { calculateStreak } = require('../../lib/calculateStreak');
 const { QueryCommand: CompletionQueryCommand } = require('../../lib/dynamodb');
 const { randomUUID } = require('crypto'); // Källa: https://nodejs.org/api/crypto.html#cryptorandomuuidoptions
-Argument: "Inbyggd modul kräver inget extra npm-paket och är säkrare än Math.random()-baserade ID:n som kan kollidera"
-const {
-  dynamo,
-  PutCommand,
-  GetCommand,
-  UpdateCommand,
-  DeleteCommand,
-  QueryCommand,
-} = require('../../lib/dynamodb');
+// Argument: "Inbyggd modul kräver inget extra npm-paket och är säkrare än Math.random()-baserade ID:n som kan kollidera"
+const { dynamo, PutCommand, GetCommand, UpdateCommand, DeleteCommand, QueryCommand } = require('../../lib/dynamodb');
 const response = require('../../lib/response');
 
 const TABLE = process.env.HABITS_TABLE;

@@ -1,13 +1,5 @@
 import { useState, useCallback } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  ActivityIndicator,
-  RefreshControl,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { getStatistics, Statistics } from '@/src/services/statisticsService';
 import { useHabits } from '@/src/contexts/HabitsContext';
@@ -45,10 +37,8 @@ function BarChart({ habits }: { habits: Statistics['habits'] }) {
           <View style={styles.barTrack}>
             <View
               style={[
-                styles.barFill,
-                {
-                  width: `${(habit.completionRate / max) * 100}%`,
-                  backgroundColor: habit.color,
+                styles.barFill, { 
+                  width: `${(habit.completionRate / max) * 100}%`, backgroundColor: habit.color,
                 },
               ]}
             />
@@ -99,18 +89,12 @@ export default function StatsScreen() {
   const { habits, completions, loadAll, refresh: refreshHabits } = useHabits();
   const [selectedHabit, setSelectedHabit] = useState<Statistics['habits'][0] | null>(null);
 
-  useFocusEffect(
-    useCallback(() => {
-      loadStats();
-    }, [])
-  );
+  useFocusEffect( useCallback(() => { loadStats(); }, []));
 
   async function loadStats() {
-    try {
-      setLoading(true);
+    try { setLoading(true);
       await Promise.all([
-        getStatistics(),
-        loadAll(),
+        getStatistics(), loadAll(),
       ]).then(([data]) => {
         setStats(data);
       });
