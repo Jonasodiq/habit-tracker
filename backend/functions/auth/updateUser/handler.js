@@ -4,7 +4,6 @@ const response = require('../../../lib/response');
 
 const TABLE           = process.env.USERS_TABLE;
 const USER_POOL_ID    = process.env.COGNITO_USER_POOL_ID;
-
 const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_REGION || 'eu-north-1' });
 
 // PATCH /auth/users/me

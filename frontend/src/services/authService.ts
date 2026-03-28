@@ -62,3 +62,17 @@ async function saveTokens(data: Partial<AuthResult>): Promise<void> {
   if (data.refreshToken) await AsyncStorage.setItem(KEYS.refreshToken, data.refreshToken);
   if (data.user)         await AsyncStorage.setItem(KEYS.user, JSON.stringify(data.user));
 }
+
+/*   Design Choices Summary 
+  Choice / Tool                       | Reason / Benefit                                                                  | Source / Notes
+  ------------------------------------|-----------------------------------------------------------------------------------|------------------------------------------------------------
+  AsyncStorage                        | Persistent key-value storage – tokens and user data survive app restarts          | https://react-native-async-storage.github.io/async-storage/
+  Centralized KEYS object             | Avoids hardcoding storage keys in multiple places – DRY principle                 | Best practice
+  Separate functions (register, login,| Clear separation of concerns – each function has a single responsibility          | Clean code principle
+    logout, isLoggedIn, getStoredUser)|                                                                                   |
+  Partial<AuthResult> in saveTokens   | Only saves available tokens – prevents overwriting with undefined values          | TypeScript feature
+  JSON.stringify / parse for user     | AsyncStorage only stores strings – ensures objects are correctly stored & restored| MDN JSON: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON
+  Axios POST requests to API          | All authentication logic centralized – components don’t need to handle endpoints  | Centralized service layer
+  Clear storage on logout             | Removes all sensitive data – avoids accidental reuse of stale tokens              | Security best practice
+  Boolean check in isLoggedIn         | Simple, reliable method to determine authentication state                         | Practical UX pattern
+*/

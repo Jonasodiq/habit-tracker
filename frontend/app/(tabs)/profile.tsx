@@ -1,26 +1,11 @@
 import { useState, useCallback } from 'react';
-import {
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  ActivityIndicator,
-  View,
-  Text,
-  TextInput,
-  Modal,
-  ScrollView,
-} from 'react-native';
+import { StyleSheet, TouchableOpacity, Alert, ActivityIndicator, View, Text, TextInput, Modal, ScrollView } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { logout } from '@/src/services/authService';
 import apiClient from '@/src/services/apiClient';
 import { Palette, Radius, Spacing, Typography, Shadows } from '@/constants/theme';
 
-interface UserProfile {
-  userId: string;
-  email: string;
-  name: string;
-  createdAt: string;
-}
+interface UserProfile { userId: string; email: string; name: string; createdAt: string; }
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -30,11 +15,7 @@ export default function ProfileScreen() {
   const [editName, setEditName]     = useState('');
   const [saving, setSaving]         = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      loadUser();
-    }, [])
-  );
+  useFocusEffect( useCallback(() => { loadUser(); }, []) );
 
   async function loadUser() {
     try {
@@ -48,10 +29,7 @@ export default function ProfileScreen() {
     }
   }
 
-  function handleOpenEdit() {
-    setEditName(user?.name || '');
-    setEditModal(true);
-  }
+  function handleOpenEdit() { setEditName(user?.name || ''); setEditModal(true); }
 
   async function handleSaveEdit() {
     if (!editName.trim()) {

@@ -1,9 +1,4 @@
-const {
-  CognitoIdentityProviderClient,
-  SignUpCommand,
-  AdminConfirmSignUpCommand,
-  InitiateAuthCommand,
-} = require('@aws-sdk/client-cognito-identity-provider');
+const { CognitoIdentityProviderClient, SignUpCommand, AdminConfirmSignUpCommand, InitiateAuthCommand } = require('@aws-sdk/client-cognito-identity-provider');
 const { dynamo, PutCommand } = require('../../../lib/dynamodb');
 const response = require('../../../lib/response');
 

@@ -1,11 +1,5 @@
 const { randomUUID } = require('crypto');
-const {
-  dynamo,
-  PutCommand,
-  GetCommand,
-  DeleteCommand,
-  QueryCommand,
-} = require('../../lib/dynamodb');
+const { dynamo, PutCommand, GetCommand, DeleteCommand, QueryCommand } = require('../../lib/dynamodb');
 const response = require('../../lib/response');
 
 const TABLE = process.env.COMPLETIONS_TABLE;
@@ -32,7 +26,7 @@ module.exports.completeHabit = async (event) => {
         IndexName: HABIT_INDEX, // Källa GSI: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html
         KeyConditionExpression: 'habitId = :hid AND completedDate = :date',
         ExpressionAttributeValues: { ':hid': habitId, ':date': today },
-        Limit: 1, // Argument: "Limit: 1 minimerar dataöverföring och kostnad i DynamoDB, DynamoDB slutar söka direkt när den hittar ett resultat — effektivt"
+        Limit: 1, // Argument: Limit: 1 minimizes data transfer and cost in DynamoDB, DynamoDB stops searching immediately when it finds a result — efficient
                   // Källa: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.html
       }),
     );
@@ -102,12 +96,12 @@ module.exports.getCompletions = async (event) => {
     }
      /*
       if (habitId) {
-        // Sök på specifik vana via HABIT_INDEX
+        // Search for specific habit via HABIT_INDEX
       } else {
-        // Sök på alla användarens completions via USER_INDEX
+        // Search all user completions via USER_INDEX
       }
-        Argument: Samma endpoint hanterar två olika användningsfall beroende på om habitId skickas med eller inte.
-        Minskar antalet endpoints i API:t.
+        Argument: The same endpoint handles two different use cases depending on whether habitId is passed or not.
+        Reduces the number of endpoints in the API.
     */
 
     return response.success({ completions: result.Items });

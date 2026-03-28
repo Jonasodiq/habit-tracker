@@ -10,9 +10,7 @@ function calculateStreak(dates, frequency = 'daily') {
 
   // Sort date DESC (newest first)
   const sorted = [...new Set(dates)].sort((a, b) => (a > b ? -1 : 1));
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
 
   if (frequency === 'daily') {
     return calculateDailyStreak(sorted, today);

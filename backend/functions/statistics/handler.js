@@ -1,15 +1,11 @@
-const {
-  dynamo,
-  QueryCommand,
-} = require('../../lib/dynamodb');
+const { dynamo, QueryCommand } = require('../../lib/dynamodb');
 const response = require('../../lib/response');
 const { calculateStreak } = require('../../lib/calculateStreak');
 
 const HABITS_TABLE      = process.env.HABITS_TABLE;
 const COMPLETIONS_TABLE = process.env.COMPLETIONS_TABLE;
 const USER_INDEX        = 'UserIdIndex'; // userId = PK
-const USER_DATE_INDEX   = 'UserIdDateIndex'; 
-// Argument: "userId + completedDate - effektiv BETWEEN-filtrering utan att scanna hela tabellen"
+const USER_DATE_INDEX   = 'UserIdDateIndex'; // Argument: userId + completedDate - efficient BETWEEN filtering without scanning the entire table
 const HABIT_INDEX = 'HabitIdDateIndex'; // search for completions per specific habit
 
 // GET /statistics

@@ -9,9 +9,7 @@ const CACHE_TABLE       = process.env.INSIGHTS_CACHE_TABLE;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const USER_INDEX        = 'UserIdIndex';
 const HABIT_INDEX       = 'HabitIdDateIndex';
-
-const CACHE_TTL_HOURS = 24;
-Argument: " 1 API-anrop per användare per dag istället för varje sidladdning. Caching minskar kostnaden"
+const CACHE_TTL_HOURS   = 24; // Argument: "1 API call per user per day instead of every page load. Caching reduces cost"
 
 // === Get cache ===
 async function getCachedInsights(userId) {
@@ -46,7 +44,7 @@ async function cacheInsights(userId, insights) {
   }
 }
 
-// === Bygg prompt för Claude  === 
+// === Build prompt for Claude  === 
 function buildPrompt(habits, completions) {
   const today = new Date().toLocaleDateString('sv-SE');
   const completedToday = completions.filter((c) => c.completedDate === today).length;

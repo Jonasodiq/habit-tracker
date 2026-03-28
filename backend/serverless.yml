@@ -211,3 +211,12 @@ resources:
         TimeToLiveSpecification:
           AttributeName: ttl
           Enabled: true
+
+#      Design Choices Summary
+#  Choice / Tool                    | Reason / Benefit                                                                      | Source
+# ----------------------------------|---------------------------------------------------------------------------------------|------------------------------------------------------------
+# Infrastructure as Code (IaC)      | Infrastructure is versioned with code – can be recreated from scratch with one command| AWS IaC guide: https://docs.aws.amazon.com/whitepapers/latest/introduction-devops-aws/infrastructure-as-code.html
+# Cognito authorizer in API Gateway | Auth happens before Lambda executes – Lambda is only billed for valid requests        | AWS API Gateway + Cognito: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html
+# DynamoDB PAY_PER_REQUEST          | Cost-efficient for uneven traffic – pay only for actual usage                         | AWS DynamoDB billing: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html
+# Lambda timeout: 30s for insights  | Claude API calls take longer than default 3s – avoids premature termination           | AWS Lambda timeout: https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html
+# Exclude .env from package         | Secrets never reach Lambda package – prevents exposing API keys                       | Serverless docs: https://www.serverless.com/framework/docs/environment-variables

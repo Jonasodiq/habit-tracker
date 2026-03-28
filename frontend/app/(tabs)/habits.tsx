@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect } from 'expo-router'; // Källa: https://reactnavigation.org/docs/use-focus-effect/
 import { deleteHabit } from '@/src/services/habitService';
 import { completeHabit, deleteCompletion } from '@/src/services/completionService';
 import { useHabits } from '@/src/contexts/HabitsContext';
@@ -9,65 +9,56 @@ import { Palette, Spacing, Typography } from '@/constants/theme';
 import * as Progress from 'react-native-progress'; // https://www.npmjs.com/package/react-native-progress?activeTab=readme
 
 export default function HabitsScreen() {
-  const {
-  habits,
-  completions,
-  loading,
-  refreshing,
-  loadAll,
-  refresh,
-  setHabits,
-  setCompletions,
-} = useHabits();
+  const { 
+    habits,completions,loading, refreshing,
+    loadAll, refresh, setHabits, setCompletions,
+  } = useHabits();
 
-useFocusEffect(
-  useCallback(() => {
-    loadAll();
-  }, [])
-);
+  useFocusEffect( useCallback(() => { loadAll(); }, []) );
 
- async function handleComplete(habitId: string) {
-  const today = new Date().toISOString().slice(0, 10);
-  const existingCompletion = completions.find(
-    (c) => c.habitId === habitId && c.completedDate === today
-  );
-  try {
-    if (existingCompletion) {
-      await deleteCompletion(existingCompletion.completionId);
-      setCompletions(completions.filter((c) => c.completionId !== existingCompletion.completionId));
-      setHabits(habits.map((h) =>
-        h.habitId === habitId ? { ...h, streak: Math.max((h.streak ?? 0) - 1, 0) } : h
-      ));
-    } else {
-      const result = await completeHabit(habitId);
-      setCompletions([...completions, result]);
-      setHabits(habits.map((h) =>
-        h.habitId === habitId ? { ...h, streak: (h.streak ?? 0) + 1 } : h
-      ));
+  async function handleComplete(habitId: string) {
+    const today = new Date().toISOString().slice(0, 10);
+    const existingCompletion = completions.find(
+      (c) => c.habitId === habitId && c.completedDate === today
+    ); // Källa: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
+    try {
+      if (existingCompletion) {
+        await deleteCompletion(existingCompletion.completionId);
+        setCompletions(completions.filter((c) => c.completionId !== existingCompletion.completionId));
+        setHabits(habits.map((h) =>
+          h.habitId === habitId ? { ...h, streak: Math.max((h.streak ?? 0) - 1, 0) } : h
+        ));
+      } else {
+        const result = await completeHabit(habitId);
+        setCompletions([...completions, result]);
+        setHabits(habits.map((h) =>
+          h.habitId === habitId ? { ...h, streak: (h.streak ?? 0) + 1 } : h
+        ));
+      } // Källa nullish coalescing: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing
+    } catch {
+      Alert.alert('Fel', 'Kunde inte uppdatera vanan');
     }
-  } catch {
-    Alert.alert('Fel', 'Kunde inte uppdatera vanan');
   }
-}
 
-async function handleDelete(habitId: string) {
-  Alert.alert('Ta bort vana', 'Är du säker?', [
-    { text: 'Avbryt', style: 'cancel' },
-    {
-      text: 'Ta bort',
-      style: 'destructive',
-      onPress: async () => {
-        try {
-          await deleteHabit(habitId);
-          setHabits(habits.filter((h) => h.habitId !== habitId));
-        } catch {
-          Alert.alert('Fel', 'Kunde inte ta bort vanan');
-        }
+  async function handleDelete(habitId: string) {
+    Alert.alert('Ta bort vana', 'Är du säker?', [
+      { text: 'Avbryt', style: 'cancel' },
+      {
+        text: 'Ta bort',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteHabit(habitId);
+            setHabits(habits.filter((h) => h.habitId !== habitId));
+          } catch {
+            Alert.alert('Fel', 'Kunde inte ta bort vanan');
+          }
+        },
       },
-    },
-  ]);
-}
+    ]);
+  }
 
+  // == Calculate which habits are completed today ==
   const today = new Date().toISOString().slice(0, 10);
   const completedToday = new Set(
     completions.filter((c) => c.completedDate === today).map((c) => c.habitId)
@@ -109,7 +100,7 @@ async function handleDelete(habitId: string) {
       {/* Progress bar */}
       {totalCount > 0 && (
         <Progress.Bar
-          progress={completedCount / totalCount}
+          progress={completedCount / totalCount} // Value 0–1 (e.g. 3/5 = 0.6 = 60%)
           width={null}
           height={8}
           color={Palette.primary}

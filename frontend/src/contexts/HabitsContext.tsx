@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, ReactNode } from 'react'; // Källa React Context: https://react.dev/reference/react/createContext
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getHabits, Habit } from '@/src/services/habitService';
 import { getCompletions, Completion } from '@/src/services/completionService';
@@ -36,7 +36,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
   const [refreshing, setRefreshing]   = useState(false);
   const [lastFetched, setLastFetched] = useState<number | null>(null);
 
-  const loadAll = useCallback(async (force = false) => {
+  const loadAll = useCallback(async (force = false) => { // Källa: https://react.dev/reference/react/useCallback
     const now = Date.now();
     if (!force && lastFetched && now - lastFetched < CACHE_TTL_MS) return;
 
@@ -105,3 +105,17 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
 export function useHabits() {
   return useContext(HabitsContext);
 }
+
+/*    Design Choices Summary
+  Choice / Tool                       | Reason / Benefit                                                                 | Source
+  ------------------------------------|----------------------------------------------------------------------------------|------------------------------------------------------------
+  React Context (instead of Redux)    | Simpler for MVP – Context is sufficient for this app size                        | React Docs: https://react.dev/reference/react/createContext
+  30s client-side cache               | Prevents unnecessary API calls when navigating between tabs                      | UX best practice
+  Promise.all() for parallel fetching | Halves load time compared to sequential API calls                                | MDN Promise.all: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
+  Separate loading / refreshing states| Better UX – distinct indicators for initial load vs pull-to-refresh              | React UX pattern
+  401 filtering in catch              | Eliminates expected error logs during app startup                                | Defensive programming
+  useCallback with [lastFetched]      | Stable function reference – avoids unnecessary re-renders in child components    | React Docs: https://react.dev/reference/react/useCallback
+  Optimistic UI (local state updates) | Immediate UI feedback while API is pending – improves perceived responsiveness   | UX best practice
+  Token check before API call         | Avoids making unauthorized API calls that return 401                             | Security best practice
+  Custom hook (useHabits)             | Components use useHabits() instead of useContext(HabitsContext) – more expressive| React Custom Hooks: https://react.dev/learn/reusing-logic-with-custom-hooks
+*/

@@ -87,17 +87,11 @@ export default function HabitDetailModal({ visible, habit, completions, onClose 
             <Text style={styles.sectionTitle}>📅 Senaste 30 dagarna</Text>
             <View style={styles.grid}>
               {days.map((day, index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.gridDay,
-                    day.completed
+                <View key={index} style={[ styles.gridDay, day.completed
                       ? { backgroundColor: habit.color }
                       : { backgroundColor: Palette.gray100 },
-                  ]}
-                >
-                  <Text style={[
-                    styles.gridDayText,
+                  ]}>
+                  <Text style={[ styles.gridDayText,
                     day.completed ? { color: Palette.white } : { color: Palette.gray400 },
                   ]}>
                     {day.day}
@@ -122,19 +116,19 @@ export default function HabitDetailModal({ visible, habit, completions, onClose 
               <Text style={styles.emptyText}>Inga genomföranden ännu</Text>
             ) : (
               [...habitCompletions]
-                .sort((a, b) => b.completedDate.localeCompare(a.completedDate))
-                .slice(0, 10)
-                .map((c) => (
-                  <View key={c.completionId} style={styles.completionRow}>
-                    <View style={[styles.completionDot, { backgroundColor: habit.color }]} />
-                    <Text style={styles.completionDate}>
-                      {new Date(c.completedDate + 'T12:00:00').toLocaleDateString('sv-SE', {
-                        weekday: 'long', day: 'numeric', month: 'long',
-                      })}
-                    </Text>
-                    <Text style={styles.completionCheck}>✅</Text>
-                  </View>
-                ))
+              .sort((a, b) => b.completedDate.localeCompare(a.completedDate))
+              .slice(0, 10)
+              .map((c) => (
+                <View key={c.completionId} style={styles.completionRow}>
+                  <View style={[styles.completionDot, { backgroundColor: habit.color }]} />
+                  <Text style={styles.completionDate}>
+                    {new Date(c.completedDate + 'T12:00:00').toLocaleDateString('sv-SE', {
+                      weekday: 'long', day: 'numeric', month: 'long',
+                    })}
+                  </Text>
+                  <Text style={styles.completionCheck}>✅</Text>
+                </View>
+              ))
             )}
           </View>
         </ScrollView>

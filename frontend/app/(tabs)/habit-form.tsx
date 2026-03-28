@@ -1,14 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { createHabit, updateHabit } from '@/src/services/habitService';
 import { Palette, Radius, Spacing, Typography, Shadows, COLORS_DEFAULT } from '@/constants/theme';
