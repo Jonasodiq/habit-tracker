@@ -177,7 +177,7 @@ habit-tracker/
 ### Prerequisites
 - Node.js 18+
 - Expo Go-appen (iOS/Android)
-- AWS-konto (för backend)
+- AWS-konto (for backend)
 
 ### 1. Clone the repository
 ```bash

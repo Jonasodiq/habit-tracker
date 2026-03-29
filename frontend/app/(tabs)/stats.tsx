@@ -89,20 +89,23 @@ export default function StatsScreen() {
   const { habits, completions, loadAll, refresh: refreshHabits } = useHabits();
   const [selectedHabit, setSelectedHabit] = useState<Statistics['habits'][0] | null>(null);
 
-  useFocusEffect( useCallback(() => { loadStats(); }, []));
-
-  async function loadStats() {
-    try { setLoading(true);
-      await Promise.all([
-        getStatistics(), loadAll(),
-      ]).then(([data]) => {
-        setStats(data);
-      });
+  const loadStats = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [data] = await Promise.all([
+        getStatistics(),
+        loadAll(),
+      ]);
+      setStats(data);
     } catch {
     } finally {
       setLoading(false);
     }
-  }
+  }, [loadAll]);
+
+  useFocusEffect(useCallback(() => {
+    void loadStats();
+  }, [loadStats]));
 
   async function handleRefresh() {
     try {

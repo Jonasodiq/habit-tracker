@@ -10,31 +10,38 @@ import { Palette, Radius, Spacing, Typography, Shadows } from '@/constants/theme
 export default function InsightsScreen() {
   const [insightsData, setInsightsData] = useState<InsightsResponse | null>(null);
   const [loading, setLoading]           = useState(true);
-  const [habits, setHabits]             = useState<Habit[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
   const [tipsText, setTipsText]         = useState('');
   const [weakestHabit, setWeakestHabit] = useState<Habit | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  useFocusEffect( useCallback(() => { loadData(); }, []) );
+  const updateWeakestHabit = useCallback((habitsData: Habit[]) => {
+    if (habitsData.length > 0) {
+      const weakest = [...habitsData].sort((a, b) => (a.streak || 0) - (b.streak || 0))[0];
+      setWeakestHabit(weakest);
+      return;
+    }
 
-  async function loadData() {
+    setWeakestHabit(null);
+  }, []);
+
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const [data, habitsData] = await Promise.all([getInsights(), getHabits()]);
+      const [data, habitsData] = await Promise.all([getInsights(false), getHabits()]);
       setInsightsData(data);
-      setHabits(habitsData);
-      if (habitsData.length > 0) {
-        const weakest = [...habitsData].sort((a, b) => (a.streak || 0) - (b.streak || 0))[0];
-        setWeakestHabit(weakest);
-      }
+      updateWeakestHabit(habitsData);
     } catch (err) {
       console.error('loadData error:', err);
     } finally {
       setLoading(false);
     }
-  }
+  }, [updateWeakestHabit]);
+
+  useFocusEffect(useCallback(() => {
+    void loadData();
+  }, [loadData]));
 
   async function handleGetTips() {
     if (!weakestHabit) return;
@@ -58,13 +65,9 @@ export default function InsightsScreen() {
   async function handleRefresh() {
     try {
       setRefreshing(true);
-      const [data, habitsData] = await Promise.all([getInsights(), getHabits()]);
+      const [data, habitsData] = await Promise.all([getInsights(true), getHabits()]);
       setInsightsData(data);
-      setHabits(habitsData);
-      if (habitsData.length > 0) {
-        const weakest = [...habitsData].sort((a, b) => (a.streak || 0) - (b.streak || 0))[0];
-        setWeakestHabit(weakest);
-      }
+      updateWeakestHabit(habitsData);
     } catch (err) {
       console.error('handleRefresh error:', err);
     } finally {

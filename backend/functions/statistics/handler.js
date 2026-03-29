@@ -1,4 +1,5 @@
 const { dynamo, QueryCommand } = require('../../lib/dynamodb');
+const { getCurrentDateKey, getDateRange } = require('../../lib/date');
 const response = require('../../lib/response');
 const { calculateStreak } = require('../../lib/calculateStreak');
 
@@ -25,11 +26,7 @@ module.exports.getStatistics = async (event) => {
     const habits = habitsResult.Items || [];
 
     // 2. Get all completions for the user (last 30 days)
-    const today = new Date();
-    const thirtyDaysAgo = new Date(today);
-    thirtyDaysAgo.setDate(today.getDate() - 30); // ex. 1 april - 30 dagar = 2 mars
-    const from = thirtyDaysAgo.toISOString().slice(0, 10);
-    const to   = today.toISOString().slice(0, 10);
+    const { from, to } = getDateRange(30);
 
     const completionsResult = await dynamo.send(
       new QueryCommand({
@@ -66,7 +63,15 @@ module.exports.getStatistics = async (event) => {
         const streak = calculateStreak(dates, habit.frequency);
 
         // Completion percentage last 30 days
-        const completionRate = Math.round((habitCompletions.length / 30) * 100);
+        const expectedCompletions =
+          habit.frequency === 'daily'   ? 30 :
+          habit.frequency === 'weekly'  ? Math.ceil(30 / 7) :  // ≈ 4 veckor
+          1;                                                     // monthly = 1 gång
+
+        const completionRate = Math.min(
+          Math.round((habitCompletions.length / expectedCompletions) * 100),
+          100
+        );
 
         return {
           habitId:        habit.habitId,
@@ -87,7 +92,7 @@ module.exports.getStatistics = async (event) => {
     const avgCompletionRate = habits.length > 0
       ? Math.round(habitStats.reduce((sum, h) => sum + h.completionRate, 0) / habits.length)
       : 0; // Källa reduce: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce
-    const todayStr          = today.toISOString().slice(0, 10);
+    const todayStr          = getCurrentDateKey();
     const completedToday    = allCompletions.filter((c) => c.completedDate === todayStr).length;
 
     return response.success({

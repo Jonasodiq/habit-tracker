@@ -1,10 +1,31 @@
 const { randomUUID } = require('crypto');
 const { dynamo, PutCommand, GetCommand, DeleteCommand, QueryCommand } = require('../../lib/dynamodb');
+const { getCurrentDateKey } = require('../../lib/date');
 const response = require('../../lib/response');
 
 const TABLE = process.env.COMPLETIONS_TABLE;
+const HABITS_TABLE = process.env.HABITS_TABLE;
 const USER_INDEX = 'UserIdDateIndex';
 const HABIT_INDEX = 'HabitIdDateIndex';
+
+async function getOwnedHabit(userId, habitId) {
+  const existingHabit = await dynamo.send(
+    new GetCommand({
+      TableName: HABITS_TABLE,
+      Key: { habitId },
+    }),
+  );
+
+  if (!existingHabit.Item) {
+    return { error: response.notFound('Vanan hittades inte') };
+  }
+
+  if (existingHabit.Item.userId !== userId) {
+    return { error: response.badRequest('Du äger inte denna vana') };
+  }
+
+  return { habit: existingHabit.Item };
+}
 
 // POST /completions. Body: { habitId }
 module.exports.completeHabit = async (event) => {
@@ -17,7 +38,12 @@ module.exports.completeHabit = async (event) => {
       return response.badRequest('habitId krävs');
     }
 
-    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD ISO 8601
+    const { error } = await getOwnedHabit(userId, habitId);
+    if (error) {
+      return error;
+    }
+
+    const today = getCurrentDateKey();
     // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingRulesDataTypes.html
 
     const existing = await dynamo.send(
@@ -64,6 +90,11 @@ module.exports.getCompletions = async (event) => {
     let result;
 
     if (habitId) {
+      const { error } = await getOwnedHabit(userId, habitId);
+      if (error) {
+        return error;
+      }
+
       // Get completions for specific habit
       const params = {
         TableName: TABLE,

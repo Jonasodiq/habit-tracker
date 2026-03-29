@@ -1,7 +1,8 @@
 import { View, Text, StyleSheet, Modal, ScrollView, TouchableOpacity } from 'react-native';
-import { Palette, Radius, Spacing, Typography, Shadows } from '@/constants/theme';
+import { Palette, Radius, Spacing, Typography } from '@/constants/theme';
 import { Statistics } from '@/src/services/statisticsService';
 import { Completion } from '@/src/services/completionService';
+import { getCurrentDateKey, parseDateKey, shiftDateKey } from '@/src/utils/date';
 
 interface Props {
   visible: boolean;
@@ -14,22 +15,19 @@ export default function HabitDetailModal({ visible, habit, completions, onClose 
   if (!habit) return null;
 
   // Filter completions for this habit (last 30 days)
-  const today = new Date();
-  const thirtyDaysAgo = new Date(today);
-  thirtyDaysAgo.setDate(today.getDate() - 30);
+  const todayKey = getCurrentDateKey();
+  const thirtyDaysAgoKey = shiftDateKey(todayKey, -29);
 
   const habitCompletions = completions.filter((c) => {
-    const date = new Date(c.completedDate + 'T12:00:00');
-    return c.habitId === habit.habitId && date >= thirtyDaysAgo;
+    return c.habitId === habit.habitId && c.completedDate >= thirtyDaysAgoKey;
   });
 
   // Build 30 day grid
   const days = Array.from({ length: 30 }, (_, i) => {
-    const d = new Date(today);
-    d.setDate(today.getDate() - (29 - i));
-    const dateStr = d.toLocaleDateString('sv-SE');
+    const dateStr = shiftDateKey(todayKey, -(29 - i));
+    const d = parseDateKey(dateStr);
     const completed = habitCompletions.some((c) => c.completedDate === dateStr);
-    return { dateStr, completed, day: d.getDate(), weekday: d.getDay() };
+    return { dateStr, completed, day: d.getUTCDate(), weekday: d.getUTCDay() };
   });
 
   const completedCount = habitCompletions.length;
@@ -73,7 +71,7 @@ export default function HabitDetailModal({ visible, habit, completions, onClose 
               <Text style={styles.statLabel}>Genomförda</Text>
             </View>
             <View style={[styles.statCard, { backgroundColor: colorWithOpacity }]}>
-              <Text style={[styles.statValue, { color: habit.color }]}>{completionRate}%</Text>
+              <Text style={[styles.statValue, { color: habit.color }]}>{habit.completionRate}%</Text>
               <Text style={styles.statLabel}>Completion</Text>
             </View>
             <View style={[styles.statCard, { backgroundColor: colorWithOpacity }]}>

@@ -20,8 +20,10 @@ export interface InsightsResponse {
   message?: string;
 }
 
-export async function getInsights(): Promise<InsightsResponse> {
-  const { data } = await apiClient.get('/insights');
+export async function getInsights(forceRefresh = false): Promise<InsightsResponse> {
+  const { data } = await apiClient.get('/insights', {
+    params: forceRefresh ? { force: 'true' } : undefined,
+  });
   return data;
 }
 

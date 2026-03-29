@@ -4,6 +4,7 @@ import { useFocusEffect } from 'expo-router'; // Källa: https://reactnavigation
 import { deleteHabit } from '@/src/services/habitService';
 import { completeHabit, deleteCompletion } from '@/src/services/completionService';
 import { useHabits } from '@/src/contexts/HabitsContext';
+import { getCurrentDateKey } from '@/src/utils/date';
 import HabitList from '@/components/HabitList';
 import { Palette, Spacing, Typography } from '@/constants/theme';
 import * as Progress from 'react-native-progress'; // https://www.npmjs.com/package/react-native-progress?activeTab=readme
@@ -14,10 +15,12 @@ export default function HabitsScreen() {
     loadAll, refresh, setHabits, setCompletions,
   } = useHabits();
 
-  useFocusEffect( useCallback(() => { loadAll(); }, []) );
+  useFocusEffect(useCallback(() => {
+    void loadAll();
+  }, [loadAll]));
 
   async function handleComplete(habitId: string) {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = getCurrentDateKey();
     const existingCompletion = completions.find(
       (c) => c.habitId === habitId && c.completedDate === today
     ); // Källa: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
@@ -25,15 +28,9 @@ export default function HabitsScreen() {
       if (existingCompletion) {
         await deleteCompletion(existingCompletion.completionId);
         setCompletions(completions.filter((c) => c.completionId !== existingCompletion.completionId));
-        setHabits(habits.map((h) =>
-          h.habitId === habitId ? { ...h, streak: Math.max((h.streak ?? 0) - 1, 0) } : h
-        ));
       } else {
         const result = await completeHabit(habitId);
         setCompletions([...completions, result]);
-        setHabits(habits.map((h) =>
-          h.habitId === habitId ? { ...h, streak: (h.streak ?? 0) + 1 } : h
-        ));
       } // Källa nullish coalescing: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing
     } catch {
       Alert.alert('Fel', 'Kunde inte uppdatera vanan');
@@ -59,7 +56,7 @@ export default function HabitsScreen() {
   }
 
   // == Calculate which habits are completed today ==
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getCurrentDateKey();
   const completedToday = new Set(
     completions.filter((c) => c.completedDate === today).map((c) => c.habitId)
   );
