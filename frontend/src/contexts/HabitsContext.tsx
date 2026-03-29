@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react'; // Källa React Context: https://react.dev/reference/react/createContext
+import { createContext, useContext, useState, useRef, useCallback, ReactNode } from 'react'; // Källa React Context: https://react.dev/reference/react/createContext
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getHabits, Habit } from '@/src/services/habitService';
 import { getCompletions, Completion } from '@/src/services/completionService';
@@ -35,10 +35,12 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading]         = useState(false);
   const [refreshing, setRefreshing]   = useState(false);
   const [lastFetched, setLastFetched] = useState<number | null>(null);
+  const lastFetchedRef                = useRef<number | null>(null);
 
-  const loadAll = useCallback(async (force = false) => { // Källa: https://react.dev/reference/react/useCallback
+  const loadAll = useCallback(async () => { // Källa: https://react.dev/reference/react/useCallback
     const now = Date.now();
-    if (!force && lastFetched && now - lastFetched < CACHE_TTL_MS) return;
+    const cachedAt = lastFetchedRef.current;
+    if (cachedAt && now - cachedAt < CACHE_TTL_MS) return;
 
     try {
       // Check if the user is logged in
@@ -52,7 +54,9 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
       ]);
       setHabits(habitsData);
       setCompletions(completionsData);
-      setLastFetched(Date.now());
+      const fetchedAt = Date.now();
+      lastFetchedRef.current = fetchedAt;
+      setLastFetched(fetchedAt);
     } catch (err: any) {
         // Ignore 401 — user is not logged in yet
         if (err?.response?.status !== 401) {
@@ -61,7 +65,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
     } finally {
         setLoading(false);
     }
-  }, [lastFetched]);
+  }, []);
 
   const refresh = useCallback(async () => {
     try {
@@ -75,7 +79,9 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
       ]);
       setHabits(habitsData);
       setCompletions(completionsData);
-      setLastFetched(Date.now());
+      const fetchedAt = Date.now();
+      lastFetchedRef.current = fetchedAt;
+      setLastFetched(fetchedAt);
     } catch (err: any) {
         if (err?.response?.status !== 401) {
             console.error('HabitsContext refresh error:', err);
@@ -92,7 +98,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
       loading,
       refreshing,
       lastFetched,
-      loadAll:        () => loadAll(false),
+      loadAll,
       refresh,
       setHabits,
       setCompletions,
@@ -114,7 +120,7 @@ export function useHabits() {
   Promise.all() for parallel fetching | Halves load time compared to sequential API calls                                | MDN Promise.all: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
   Separate loading / refreshing states| Better UX – distinct indicators for initial load vs pull-to-refresh              | React UX pattern
   401 filtering in catch              | Eliminates expected error logs during app startup                                | Defensive programming
-  useCallback with [lastFetched]      | Stable function reference – avoids unnecessary re-renders in child components    | React Docs: https://react.dev/reference/react/useCallback
+  useRef + stable useCallback         | Avoids stale closures while keeping the 30s cache accurate across tab navigation | React Docs: https://react.dev/reference/react/useRef
   Optimistic UI (local state updates) | Immediate UI feedback while API is pending – improves perceived responsiveness   | UX best practice
   Token check before API call         | Avoids making unauthorized API calls that return 401                             | Security best practice
   Custom hook (useHabits)             | Components use useHabits() instead of useContext(HabitsContext) – more expressive| React Custom Hooks: https://react.dev/learn/reusing-logic-with-custom-hooks

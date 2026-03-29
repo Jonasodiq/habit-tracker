@@ -1,3 +1,5 @@
+const { formatDateKey, getCurrentDateKey, parseDateKey, shiftDateKey } = require('./date');
+
 /**
  * Calculates streak based on completions and frequency
  *
@@ -10,38 +12,33 @@ function calculateStreak(dates, frequency = 'daily') {
 
   // Sort date DESC (newest first)
   const sorted = [...new Set(dates)].sort((a, b) => (a > b ? -1 : 1));
-  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const todayKey = getCurrentDateKey();
 
   if (frequency === 'daily') {
-    return calculateDailyStreak(sorted, today);
+    return calculateDailyStreak(sorted, todayKey);
   } else if (frequency === 'weekly') {
-    return calculateWeeklyStreak(sorted, today);
+    return calculateWeeklyStreak(sorted, todayKey);
   } else if (frequency === 'monthly') {
-    return calculateMonthlyStreak(sorted, today);
+    return calculateMonthlyStreak(sorted, todayKey);
   }
 
   return 0;
 }
 
-function calculateDailyStreak(sortedDates, today) {
+function calculateDailyStreak(sortedDates, todayKey) {
   let streak = 0;
-  let expected = new Date(today);
+  let expectedKey = todayKey;
+  const yesterdayKey = shiftDateKey(todayKey, -1);
 
-  for (const dateStr of sortedDates) {
-    const date = new Date(dateStr);
-    date.setHours(0, 0, 0, 0);
-
-    const diffDays = Math.round((expected - date) / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) {
+  for (const dateKey of sortedDates) {
+    if (dateKey === expectedKey) {
       // Completed on the right day
       streak++;
-      expected.setDate(expected.getDate() - 1);
-    } else if (diffDays === 1 && streak === 0) {
+      expectedKey = shiftDateKey(expectedKey, -1);
+    } else if (dateKey === yesterdayKey && streak === 0) {
       // Allow yesterday as a start if not done today yet
       streak++;
-      expected = new Date(date);
-      expected.setDate(expected.getDate() - 1);
+      expectedKey = shiftDateKey(dateKey, -1);
     } else {
       break;
     }
@@ -50,26 +47,24 @@ function calculateDailyStreak(sortedDates, today) {
   return streak;
 }
 
-function calculateWeeklyStreak(sortedDates, today) {
+function calculateWeeklyStreak(sortedDates, todayKey) {
   let streak = 0;
-  const getWeekKey = (date) => {
-    const d = new Date(date);
-    const day = d.getDay();
+  const getWeekKey = (dateKey) => {
+    const d = parseDateKey(dateKey);
+    const day = d.getUTCDay();
     const monday = new Date(d);
-    monday.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
-    return monday.toISOString().slice(0, 10);
+    monday.setUTCDate(d.getUTCDate() - (day === 0 ? 6 : day - 1));
+    return formatDateKey(monday);
   };
 
   const weeks = [...new Set(sortedDates.map(getWeekKey))].sort((a, b) =>
     a > b ? -1 : 1,
   );
 
-  const currentWeek = getWeekKey(today);
+  const currentWeek = getWeekKey(todayKey);
 
   for (let i = 0; i < weeks.length; i++) {
-    const expectedWeek = new Date(currentWeek);
-    expectedWeek.setDate(expectedWeek.getDate() - i * 7);
-    const expectedKey = expectedWeek.toISOString().slice(0, 10);
+    const expectedKey = shiftDateKey(currentWeek, -i * 7);
 
     if (weeks[i] === expectedKey) {
       streak++;
@@ -81,7 +76,7 @@ function calculateWeeklyStreak(sortedDates, today) {
   return streak;
 }
 
-function calculateMonthlyStreak(sortedDates, today) {
+function calculateMonthlyStreak(sortedDates, todayKey) {
   let streak = 0;
   const getMonthKey = (date) => date.slice(0, 7); // YYYY-MM
 
@@ -89,11 +84,12 @@ function calculateMonthlyStreak(sortedDates, today) {
     a > b ? -1 : 1,
   );
 
-  const currentMonth = getMonthKey(today.toISOString());
+  const today = parseDateKey(todayKey);
+  const currentMonth = getMonthKey(todayKey);
 
   for (let i = 0; i < months.length; i++) {
-    const expected = new Date(today.getFullYear(), today.getMonth() - i, 1);
-    const expectedKey = expected.toISOString().slice(0, 7);
+    const expected = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - i, 1, 12));
+    const expectedKey = formatDateKey(expected).slice(0, 7);
 
     if (months[i] === expectedKey) {
       streak++;

@@ -1,4 +1,8 @@
+const { getCurrentDateKey, shiftDateKey } = require('../date');
+
 // Testdata för att verifiera insiktsalgoritmen
+const today = getCurrentDateKey();
+
 const testData = {
   habits: [
     { habitId: 'h1', name: 'Träna', icon: '💪', color: '#FF6B6B', frequency: 'daily' },
@@ -11,19 +15,19 @@ const testData = {
     ...Array.from({ length: 25 }, (_, i) => ({
       completionId: `c1_${i}`,
       habitId: 'h1',
-      completedDate: new Date(Date.now() - i * 86400000).toISOString().slice(0, 10),
+      completedDate: shiftDateKey(today, -i),
     })),
     // Reading — 5/30 days (17%) — streak 1
     ...Array.from({ length: 5 }, (_, i) => ({
       completionId: `c2_${i}`,
       habitId: 'h2',
-      completedDate: new Date(Date.now() - i * 6 * 86400000).toISOString().slice(0, 10),
+      completedDate: shiftDateKey(today, -(i * 6)),
     })),
     // Meditation — 15/30 days (50%) — streak 3
     ...Array.from({ length: 15 }, (_, i) => ({
       completionId: `c3_${i}`,
       habitId: 'h3',
-      completedDate: new Date(Date.now() - i * 2 * 86400000).toISOString().slice(0, 10),
+      completedDate: shiftDateKey(today, -(i * 2)),
     })),
   ],
 };

@@ -4,6 +4,7 @@ import { Calendar } from 'react-native-calendars';
 import Svg, { Circle } from 'react-native-svg';
 import { Completion } from '@/src/services/completionService';
 import { Habit } from '@/src/services/habitService';
+import { getCurrentDateKey } from '@/src/utils/date';
 import { LocaleConfig } from 'react-native-calendars';
 
 LocaleConfig.locales['sv'] = {
@@ -33,7 +34,7 @@ export default function HabitCalendar({ habits, completions }: Props) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const habitMap = new Map(habits.map((h) => [h.habitId, h]));
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = getCurrentDateKey();
 
   // Build completions per day
   const completionsPerDay: Record<string, string[]> = {};

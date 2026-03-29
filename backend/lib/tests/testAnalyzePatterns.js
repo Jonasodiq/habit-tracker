@@ -1,4 +1,5 @@
 const { analyzePatterns } = require('../analyzePatterns');
+const { getCurrentDateKey, shiftDateKey } = require('../date');
 const { testData } = require('./testInsightsData');
 
 // Test 1: Normal dataset
@@ -15,7 +16,7 @@ console.log('Insikter:', result2.length, '(förväntat: 0)');
 console.log('\n=== Test 3: För lite data ===');
 const result3 = analyzePatterns(
   [{ habitId: 'h1', name: 'Träna', icon: '💪', color: '#FF6B6B', frequency: 'daily', streak: 2 }],
-  [{ completionId: 'c1', habitId: 'h1', completedDate: new Date().toISOString().slice(0, 10) }]
+  [{ completionId: 'c1', habitId: 'h1', completedDate: getCurrentDateKey() }]
 );
 result3.forEach((i) => console.log(`[${i.type}] ${i.message}`));
 
@@ -24,12 +25,10 @@ console.log('\n=== Test 4: Perfekt vecka ===');
 const perfectCompletions = [];
 ['h1', 'h2'].forEach((habitId) => {
   for (let i = 0; i < 7; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
     perfectCompletions.push({
       completionId: `${habitId}_${i}`,
       habitId,
-      completedDate: d.toISOString().slice(0, 10),
+      completedDate: shiftDateKey(getCurrentDateKey(), -i),
     });
   }
 });
@@ -41,6 +40,50 @@ const result4 = analyzePatterns(
   perfectCompletions
 );
 result4.forEach((i) => console.log(`[${i.type}] ${i.message}`));
+
+// Test 5: Mixed frequencies should still allow perfect week
+console.log('\n=== Test 5: Perfekt vecka med weekly/monthly ===');
+const mixedFrequencyResult = analyzePatterns(
+  [
+    { habitId: 'h1', name: 'Träna', icon: '💪', color: '#FF6B6B', frequency: 'daily', streak: 7 },
+    { habitId: 'h2', name: 'Planera', icon: '🗓️', color: '#4ECDC4', frequency: 'weekly', streak: 2 },
+    { habitId: 'h3', name: 'Budget', icon: '💸', color: '#45B7D1', frequency: 'monthly', streak: 1 },
+  ],
+  [
+    ...Array.from({ length: 7 }, (_, i) => ({
+      completionId: `daily_${i}`,
+      habitId: 'h1',
+      completedDate: shiftDateKey(getCurrentDateKey(), -i),
+    })),
+    {
+      completionId: 'weekly_1',
+      habitId: 'h2',
+      completedDate: shiftDateKey(getCurrentDateKey(), -2),
+    },
+  ],
+);
+mixedFrequencyResult.forEach((i) => console.log(`[${i.type}] ${i.message}`));
+
+// Test 6: Weekly comeback
+console.log('\n=== Test 6: Weekly comeback ===');
+const weeklyComebackResult = analyzePatterns(
+  [
+    { habitId: 'h1', name: 'Veckoplanera', icon: '📝', color: '#FF6B6B', frequency: 'weekly', streak: 1 },
+  ],
+  [
+    {
+      completionId: 'old_week',
+      habitId: 'h1',
+      completedDate: shiftDateKey(getCurrentDateKey(), -15),
+    },
+    {
+      completionId: 'current_week',
+      habitId: 'h1',
+      completedDate: shiftDateKey(getCurrentDateKey(), -2),
+    },
+  ],
+);
+weeklyComebackResult.forEach((i) => console.log(`[${i.type}] ${i.message}`));
 
 // Test
 // node lib/testAnalyzePatterns.js

@@ -1,4 +1,5 @@
 const { dynamo, QueryCommand, PutCommand, GetCommand } = require('../../lib/dynamodb');
+const { getCurrentDateKey, getDateRange } = require('../../lib/date');
 const response = require('../../lib/response');
 const { analyzePatterns } = require('../../lib/analyzePatterns');
 const { calculateStreak } = require('../../lib/calculateStreak');
@@ -46,7 +47,7 @@ async function cacheInsights(userId, insights) {
 
 // === Build prompt for Claude  === 
 function buildPrompt(habits, completions) {
-  const today = new Date().toLocaleDateString('sv-SE');
+  const today = getCurrentDateKey();
   const completedToday = completions.filter((c) => c.completedDate === today).length;
 
   const streaksText = habits
@@ -91,7 +92,7 @@ async function callClaude(habits, completions) {
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }],
     }),
@@ -113,11 +114,14 @@ module.exports.getInsights = async (event) => {
     console.log('REQUEST CONTEXT:', JSON.stringify(event.requestContext));
     
     const userId = event.requestContext.authorizer.claims.sub;
+    const forceRefresh = event.queryStringParameters?.force === 'true';
 
     // 1. Check cache
-    const cached = await getCachedInsights(userId);
-    if (cached) {
-      return response.success({ ...cached, fromCache: true });
+    if (!forceRefresh) {
+      const cached = await getCachedInsights(userId);
+      if (cached) {
+        return response.success({ ...cached, fromCache: true });
+      }
     } // Källa spread: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax
 
     // 2. Get habits
@@ -142,11 +146,7 @@ module.exports.getInsights = async (event) => {
     }
 
     // 3. Get completions (last 30 days)
-    const today = new Date();
-    const thirtyDaysAgo = new Date(today);
-    thirtyDaysAgo.setDate(today.getDate() - 30);
-    const from = thirtyDaysAgo.toLocaleDateString('sv-SE');
-    const to   = today.toLocaleDateString('sv-SE');
+    const { from, to } = getDateRange(30);
 
     const completionsResult = await dynamo.send(
       new QueryCommand({
@@ -245,7 +245,7 @@ module.exports.getHabitTips = async (event) => {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model:      'claude-sonnet-4-20250514',
+        model:      'claude-sonnet-4-6',
         max_tokens: 1000,
         messages:   [{ role: 'user', content: prompt }],
       }),
