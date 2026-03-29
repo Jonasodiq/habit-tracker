@@ -133,8 +133,7 @@ functions:
           authorizer:
             type: COGNITO_USER_POOLS
             arn: ${self:custom.cognitoArn}
-            
-  # --- STATISTICS ---
+            # --- STATISTICS ---
   getStatistics:
     handler: functions/statistics/handler.getStatistics
     events:
